@@ -1,7 +1,10 @@
-using Attendnce_Management_System.AttendanceManagementSystem;
+using Attendance_Management_System.AttendanceManagementSystem;
+using Attendance_Management_System.AttendanceManagementSystem.Interface.RepositoryInterface;
 using Microsoft.EntityFrameworkCore;
-using Smart_Library.SmartLibraryManagement.Interface;
-using Smart_Library.SmartLibraryManagement.Repository;
+using Attendance_Management_System.AttendanceManagementSystem.Repository;
+using Attendance_Management_System.AttendanceManagementSystem.Interface.ServiceInterface;
+using Attendance_Management_System.AttendanceManagementSystem.Service;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,10 +18,43 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabaseLibrary>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AttendanceDBString")));
 
+builder.Services.AddSwaggerGen(options =>
+{
+	var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+	options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
+
+// Repository DI for the Service: so service can use this automatically 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IUserGroupRepository, UserGroupRepository>();
+builder.Services.AddScoped<IAccessRepository, AccessRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IProgramRepository, ProgramRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+
+
+// Adding DI for the Controller: so controller can use this automatically 
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IUserGroupService, UserGroupService>();
+builder.Services.AddScoped<IAccessService, AccessService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IProgramService, ProgramService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 
 var app = builder.Build();

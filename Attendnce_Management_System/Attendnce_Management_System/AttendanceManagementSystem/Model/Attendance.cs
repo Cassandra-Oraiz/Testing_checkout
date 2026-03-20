@@ -1,23 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Attendnce_Management_System.AttendanceManagementSystem.Model
+namespace Attendance_Management_System.AttendanceManagementSystem.Model
 {
     public class Attendance
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Attendance_id { get; set; }
+        public int Attendance_ID { get; set; }
 
         [Required]
-        public required int Student_id { get; set; }
-
-        public Student? Student { get; set; }
+        public required int Enrollment_ID { get; set; }
 
         [Required]
-        public required int Course_id { get; set; }
-
-        public DateTime Date { get; set; }
+        public required DateTime Date { get; set; }
 
         [Required]
         public required string Status { get; set; } // Present, Absent, Late

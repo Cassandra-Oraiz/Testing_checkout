@@ -1,9 +1,9 @@
-﻿using Attendnce_Management_System.AttendanceManagementSystem;
-using Attendnce_Management_System.AttendanceManagementSystem.Model;
+﻿using Attendance_Management_System.AttendanceManagementSystem;
+using Attendance_Management_System.AttendanceManagementSystem.Interface.RepositoryInterface;
+using Attendance_Management_System.AttendanceManagementSystem.Model;
 using Microsoft.EntityFrameworkCore;
-using Smart_Library.SmartLibraryManagement.Interface;
 
-namespace Smart_Library.SmartLibraryManagement.Repository
+namespace Attendance_Management_System.AttendanceManagementSystem.Repository
 {
     public class CourseRepository(DatabaseLibrary db) : ICourseRepository
     {
@@ -14,9 +14,9 @@ namespace Smart_Library.SmartLibraryManagement.Repository
             return await _db.Courses.ToListAsync();
         }
 
-        public async Task<Course?> GetByIdAsync(int id)
+        public async Task<Course?> GetByIdAsync(int ID)
         {
-            return await _db.Courses.FindAsync(id);
+            return await _db.Courses.FindAsync(ID);
         }
 
         public async Task AddAsync(Course course)

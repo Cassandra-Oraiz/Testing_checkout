@@ -1,9 +1,9 @@
-﻿using Attendnce_Management_System.AttendanceManagementSystem;
-using Attendnce_Management_System.AttendanceManagementSystem.Model;
+﻿using Attendance_Management_System.AttendanceManagementSystem;
+using Attendance_Management_System.AttendanceManagementSystem.Interface.RepositoryInterface;
+using Attendance_Management_System.AttendanceManagementSystem.Model;
 using Microsoft.EntityFrameworkCore;
-using Smart_Library.SmartLibraryManagement.Interface;
 
-namespace Smart_Library.SmartLibraryManagement.Repository
+namespace Attendance_Management_System.AttendanceManagementSystem.Repository
 {
     public class AttendanceRepository(DatabaseLibrary db) : IAttendanceRepository
     {
@@ -11,17 +11,17 @@ namespace Smart_Library.SmartLibraryManagement.Repository
 
         public async Task<IEnumerable<Attendance>> GetAllAsync()
         {
-            return await _db.Attendance.ToListAsync();
+            return await _db.Attendances.ToListAsync();
         }
 
-        public async Task<Attendance?> GetByIdAsync(int id)
+        public async Task<Attendance?> GetByIdAsync(int ID)
         {
-            return await _db.Attendance.FindAsync(id);
+            return await _db.Attendances.FindAsync(ID);
         }
 
         public async Task AddAsync(Attendance attendance)
         {
-            _db.Attendance.Add(attendance);
+            _db.Attendances.Add(attendance);
             await _db.SaveChangesAsync();
         }
 
@@ -33,7 +33,7 @@ namespace Smart_Library.SmartLibraryManagement.Repository
 
         public async Task DeleteAsync(Attendance attendance)
         {
-            _db.Attendance.Remove(attendance);
+            _db.Attendances.Remove(attendance);
             await _db.SaveChangesAsync();
         }
     }

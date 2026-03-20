@@ -40,3 +40,15 @@ C:\Users\Lenovo\source\K-Group\Attendnce_Management_System\Attendnce_Management_
 C:\Users\Lenovo\source\K-Group\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.pdb
 C:\Users\Lenovo\source\K-Group\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.genruntimeconfig.cache
 C:\Users\Lenovo\source\K-Group\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\ref\Attendnce_Management_System.dll
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.csproj.AssemblyReference.cache
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.AssemblyInfoInputs.cache
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.AssemblyInfo.cs
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.csproj.CoreCompileInputs.cache
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.sourcelink.json
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.dll
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\refint\Attendnce_Management_System.dll
+C:\Users\Lenovo\source\Backend\Attendnce_Management_System\Attendnce_Management_System\obj\Debug\net8.0\Attendnce_Management_System.pdb

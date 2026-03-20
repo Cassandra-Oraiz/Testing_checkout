@@ -1,11 +1,11 @@
-﻿using Attendnce_Management_System.AttendanceManagementSystem.Model;
+﻿using Attendance_Management_System.AttendanceManagementSystem.Model;
 
-namespace Smart_Library.SmartLibraryManagement.Interface
+namespace Attendance_Management_System.AttendanceManagementSystem.Interface.RepositoryInterface
 {
     public interface ICourseRepository
     {
         Task<IEnumerable<Course>> GetAllAsync();
-        Task<Course?> GetByIdAsync(int id);
+        Task<Course?> GetByIdAsync(int ID);
         Task AddAsync(Course course);
         Task UpdateAsync(Course course);
         Task DeleteAsync(Course course);

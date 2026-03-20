@@ -1,4 +1,4 @@
-namespace Attendnce_Management_System
+namespace Attendance_Management_System
 {
     public class WeatherForecast
     {
