@@ -23,7 +23,7 @@ namespace Attendance_Management_System.AttendanceManagementSystem.DTO
         public int User_ID { get; set; }
         public string? Full_Name { get; set; }
         public required string Email { get; set; }
-        public required string PassHash { get; set; }
+        public required string Password { get; set; }
         public string? Phone_Number { get; set; }
         public char? Gender { get; set; }
         public DateTime? Birth_Date { get; set; }

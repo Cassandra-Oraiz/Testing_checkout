@@ -1,7 +1,7 @@
 ﻿using Attendance_Management_System.AttendanceManagementSystem.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Attendance_Management_System.AttendanceManagementSystem
+namespace Attendance_Management_System  .AttendanceManagementSystem
 {
     public class DatabaseLibrary : DbContext
     {
@@ -21,5 +21,15 @@ namespace Attendance_Management_System.AttendanceManagementSystem
         public DbSet<Program_> Programs { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Attendance>()
+                .Property(s => s.Status)
+                .HasConversion<string>();
+        }
     }
+
 }

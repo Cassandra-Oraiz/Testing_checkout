@@ -8,7 +8,7 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Interface.Serv
         Task<GetUserDTO?> GetByIdAsync(int id);
         Task<GetUserDTO> AddAsync(AddUserDTO userDto);
         Task<LoginResult> LoginAsync(LoginUserDto login);
-        Task<GetUserDTO?> UpdateAsync(int id, AddUserDTO userDto);
+        //Task<GetUserDTO?> UpdateAsync(int id, AddUserDTO userDto);
         Task<bool> DeleteAsync(int id);
     }
 }

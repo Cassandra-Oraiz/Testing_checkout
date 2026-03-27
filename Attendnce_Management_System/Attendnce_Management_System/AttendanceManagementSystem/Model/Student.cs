@@ -16,14 +16,16 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Model
         public required int Department_ID { get; set; }
 
         [Required]
-        public required string Year_Level { get; set; }
+        public required int Year_Level { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime LastUpdatedAt { get; set; }
 
+        [MaxLength(210)]
         public string? CreatedBy { get; set; }
 
+        [MaxLength(210)]
         public string? LastUpdatedBy { get; set; }
     }
 }

@@ -10,11 +10,14 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Model
         public int Course_ID { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public required string Title { get; set; }
 
         [Required]
+        [MaxLength(6)]
         public required string Code { get; set; }
 
+        [MaxLength(512)]
         public string? Description { get; set; }
 
         [Required]
@@ -24,8 +27,10 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Model
 
         public DateTime LastUpdatedAt { get; set; }
 
+        [MaxLength(210)]
         public string? CreatedBy { get; set; }
 
+        [MaxLength(210)]
         public string? LastUpdatedBy { get; set; }
     }
 }

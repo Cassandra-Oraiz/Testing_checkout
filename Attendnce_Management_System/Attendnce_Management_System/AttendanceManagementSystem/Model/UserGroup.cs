@@ -10,8 +10,10 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Model
         public int Group_ID { get; set; }   // Primary Key
 
         [Required]
+        [StringLength(50)]
         public required string Group_Name { get; set; }   // Name of the group
 
+        [StringLength(210)]
         public string? Group_Description { get; set; }   
 
         public DateTime Group_Created { get; set; }       

@@ -59,11 +59,14 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Service
 
         public async Task<GetUserDTO> AddAsync(AddUserDTO userDto)
         {
+
+            string Pass_Hash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+
             var user = new User
             {
                 Full_Name = userDto.Full_Name!,
                 Email = userDto.Email,
-                PassHash = userDto.PassHash,
+                PassHash = Pass_Hash,
                 Phone_Number = userDto.Phone_Number,
                 Gender = userDto.Gender,
                 Birth_Date = userDto.Birth_Date,
@@ -117,40 +120,40 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Service
                 Detail = $"Welcome Back {user.Full_Name}"
             };
         }
-        public async Task<GetUserDTO?> UpdateAsync(int id, AddUserDTO userDto)
-        {
-            var existing = await _userRepository.GetByIdAsync(id);
-            if (existing == null) return null;
+        //public async Task<GetUserDTO?> UpdateAsync(int id, AddUserDTO userDto)
+        //{
+        //    var existing = await _userRepository.GetByIdAsync(id);
+        //    if (existing == null) return null;
 
-            existing.Full_Name = userDto.Full_Name!;
-            existing.Email = userDto.Email;
-            existing.PassHash = userDto.PassHash;
-            existing.Phone_Number = userDto.Phone_Number;
-            existing.Gender = userDto.Gender;
-            existing.Birth_Date = userDto.Birth_Date;
-            existing.Address = userDto.Address;
-            existing.UserGroup_ID = userDto.UserGroup_ID;
-            existing.LastUpdatedAt = DateTime.UtcNow;
-            existing.LastUpdatedBy = userDto.LastUpdatedBy;
+        //    existing.Full_Name = userDto.Full_Name!;
+        //    existing.Email = userDto.Email;
+        //    existing.PassHash = userDto.PassHash;
+        //    existing.Phone_Number = userDto.Phone_Number;
+        //    existing.Gender = userDto.Gender;
+        //    existing.Birth_Date = userDto.Birth_Date;
+        //    existing.Address = userDto.Address;
+        //    existing.UserGroup_ID = userDto.UserGroup_ID;
+        //    existing.LastUpdatedAt = DateTime.UtcNow;
+        //    existing.LastUpdatedBy = userDto.LastUpdatedBy;
 
-            await _userRepository.UpdateAsync(existing);
+        //    await _userRepository.UpdateAsync(existing);
 
-            return new GetUserDTO
-            {
-                User_ID = existing.User_ID,
-                Full_Name = existing.Full_Name,
-                Email = existing.Email,
-                Phone_Number = existing.Phone_Number,
-                Gender = existing.Gender,
-                Birth_Date = existing.Birth_Date,
-                Address = existing.Address,
-                UserGroup_ID = existing.UserGroup_ID,
-                CreatedAt = existing.CreatedAt,
-                LastUpdatedAt = existing.LastUpdatedAt,
-                CreatedBy = existing.CreatedBy,
-                LastUpdatedBy = existing.LastUpdatedBy
-            };
-        }
+        //    return new GetUserDTO
+        //    {
+        //        User_ID = existing.User_ID,
+        //        Full_Name = existing.Full_Name,
+        //        Email = existing.Email,
+        //        Phone_Number = existing.Phone_Number,
+        //        Gender = existing.Gender,
+        //        Birth_Date = existing.Birth_Date,
+        //        Address = existing.Address,
+        //        UserGroup_ID = existing.UserGroup_ID,
+        //        CreatedAt = existing.CreatedAt,
+        //        LastUpdatedAt = existing.LastUpdatedAt,
+        //        CreatedBy = existing.CreatedBy,
+        //        LastUpdatedBy = existing.LastUpdatedBy
+        //    };
+        //}
 
         public async Task<bool> DeleteAsync(int id)
         {

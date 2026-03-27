@@ -10,6 +10,7 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Model
         public int Permission_ID { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public required string Permission_Description { get; set; }
 
         [Required]

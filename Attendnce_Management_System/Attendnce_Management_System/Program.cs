@@ -24,6 +24,14 @@ builder.Services.AddSwaggerGen(options =>
 	options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+//register cors and allow all origin, may it be from port 1234 or angular framework
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll",
+		policy => policy.AllowAnyOrigin()
+								 .AllowAnyHeader()
+								 .AllowAnyMethod());
+});
 
 // Repository DI for the Service: so service can use this automatically 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();

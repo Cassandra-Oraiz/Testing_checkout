@@ -36,7 +36,7 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Controller
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(AddUserDTO dto)
+        public async Task<IActionResult> Register(AddUserDTO dto)
         {
             var user = await _userService.AddAsync(dto);
             return Ok(user);
@@ -51,15 +51,15 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Controller
             return Ok(login.Detail);
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, AddUserDTO dto)
-        {
-            var user = await _userService.UpdateAsync(id, dto);
-            if (user == null)
-                return NotFound($"User with ID {id} not found.");
+        //[HttpPut("{id:int}")]
+        //public async Task<IActionResult> Update(int id, AddUserDTO dto)
+        //{
+        //    var user = await _userService.UpdateAsync(id, dto);
+        //    if (user == null)
+        //        return NotFound($"User with ID {id} not found.");
 
-            return Ok(user);
-        }
+        //    return Ok(user);
+        //}
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)

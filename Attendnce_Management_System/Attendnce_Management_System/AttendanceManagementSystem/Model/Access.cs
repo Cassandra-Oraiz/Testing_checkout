@@ -10,8 +10,10 @@ namespace Attendance_Management_System.AttendanceManagementSystem.Model
         public int Access_ID { get; set; }
 
         [Required]
+        [MaxLength(512)]
         public required string Name { get; set; }
 
+        [MaxLength(512)]
         public string? Description { get; set; }
     }
 }
