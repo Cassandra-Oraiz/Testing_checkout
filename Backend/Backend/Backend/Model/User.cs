@@ -3,11 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Backend.Model
 {
+    /*
+    Teacher Table
+    - uses GUID / UUID (ULID) for 
+        - security purposes
+        - privacy for the teacher
+        - (v7 like) for sorting using epoch timestamp and random data
+        - new record cant be late with the old record (better for sorting)
+        - Avoids collisions if not generated exact time, milisec accuracy
+    */
     public class User
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid User_ID { get; set; }
+        public string User_ID { get; set; } = Ulid.NewUlid().ToString();
 
         [Required]
         [MaxLength(255)]

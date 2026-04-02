@@ -5,17 +5,17 @@ namespace Backend.Backend.Model
 {
     /*
     Student Table
-    - uses GUID / UUID for 
+    - uses GUID / UUID (ULID) for 
         - security purposes
         - privacy for the student
-        - registers the timeframe and mac add of the device
+        - (v7 like) for sorting using epoch timestamp and random data
+        - new record cant be late with the old record (better for sorting)
+        - Avoids collisions if not generated exact time, milisec accuracy
     */
-
     public class Student
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Student_ID { get; set; }
+        public string Student_ID { get; set; } = Ulid.NewUlid().ToString();
 
         [Required]
         public int Program_ID { get; set; }
