@@ -7,7 +7,7 @@ namespace Backend.Backend.Model
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int User_ID { get; set; }
+        public Guid User_ID { get; set; }
 
         [Required]
         [MaxLength(255)]

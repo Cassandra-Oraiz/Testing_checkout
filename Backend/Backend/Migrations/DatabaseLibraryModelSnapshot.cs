@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Attendance_Management_System.Migrations
+namespace Backend.Migrations
 {
     [DbContext(typeof(DatabaseLibrary))]
     partial class DatabaseLibraryModelSnapshot : ModelSnapshot
@@ -72,8 +72,9 @@ namespace Attendance_Management_System.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Attendance_ID");
 
@@ -266,11 +267,9 @@ namespace Attendance_Management_System.Migrations
 
             modelBuilder.Entity("Backend.Backend.Model.Student", b =>
                 {
-                    b.Property<int>("Student_ID")
+                    b.Property<Guid>("Student_ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Student_ID"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -302,11 +301,9 @@ namespace Attendance_Management_System.Migrations
 
             modelBuilder.Entity("Backend.Backend.Model.Teacher", b =>
                 {
-                    b.Property<int>("Teacher_ID")
+                    b.Property<Guid>("Teacher_ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Teacher_ID"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -334,11 +331,9 @@ namespace Attendance_Management_System.Migrations
 
             modelBuilder.Entity("Backend.Backend.Model.User", b =>
                 {
-                    b.Property<int>("User_ID")
+                    b.Property<Guid>("User_ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("User_ID"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Address")
                         .HasMaxLength(512)

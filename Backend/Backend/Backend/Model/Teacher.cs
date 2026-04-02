@@ -3,11 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Backend.Model
 {
+    /*
+    Teacher Table
+    - uses GUID / UUID for 
+        - security purposes
+        - privacy for the teacher
+        - registers the timeframe and mac add of the device
+    */
+
     public class Teacher
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Teacher_ID { get; set; }
+        public Guid Teacher_ID { get; set; }
 
         [MaxLength(50)]
         [Required]

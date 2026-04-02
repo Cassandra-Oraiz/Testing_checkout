@@ -2,7 +2,7 @@
 {
     public class GetTeacherDTO
     {
-        public int Teacher_ID { get; set; }
+        public Guid Teacher_ID { get; set; }
         public required string Department { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
