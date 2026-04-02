@@ -1,3 +1,13 @@
+<h1 align="center">
+	<br>
+	<br>
+	<img width="360" src="logo.png" alt="ulid">
+	<br>
+	<br>
+	<br>
+</h1>
+
+
 #Project Manager: Cassandra Gayle R. Oraiz
 #Backend: Carl Joshua P. Santos
 #Frontend: Leila G. Bangoy
