@@ -1,9 +1,5 @@
 <h1 align="center">
-	<br>
-	<br>
-	<img width="500" height="120" src="KCORD_logo_transparent.png" alt="KCORD">
-	<br>
-	<br>
+	<img width="500" src="KCORD_logo_transparent.png" alt="KCORD">
 	<br>
 </h1>
 
