@@ -6,7 +6,7 @@ namespace Backend.Backend.Model
     public class Access
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Access_ID { get; set; }
 
         [Required]
