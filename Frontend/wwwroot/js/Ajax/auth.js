@@ -1,0 +1,1 @@
+﻿// auth.js — login is handled inline in Login/Index.cshtml
