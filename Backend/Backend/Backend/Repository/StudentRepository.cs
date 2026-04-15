@@ -48,5 +48,11 @@ namespace Backend.Backend.Repository
                 .SqlQuery<long>($"SELECT nextval('StudentSeq') AS \"Value\"")
                 .SingleAsync();
         }
+
+        public async Task<bool> CheckUserIfTaken(int uId)
+        {
+            return await _db.Students.AnyAsync(s => s.User_ID == uId);
+        }
+
     }
 }

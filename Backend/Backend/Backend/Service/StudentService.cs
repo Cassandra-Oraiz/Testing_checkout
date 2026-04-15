@@ -46,6 +46,14 @@ namespace Backend.Backend.Service
         {
             // Get Program
             var get_program = await _studentRepository.GetProgramByIdAsync(dto.Program_ID);
+
+            // Check if User is Taken
+            if (await _studentRepository.CheckUserIfTaken(dto.User_ID))
+                return new StudentResponse()
+                { Status_Code = 409,
+                    data = null
+                };
+
             // Get Student Program's Ackronym
             string getStudentProgram = Helper.GetAcronym.GetAllCapitalLettersPerWord(get_program!.Name);
             // check if the there are program or THE PROGRAM NAME IS NOT CAPITAL 
@@ -57,7 +65,7 @@ namespace Backend.Backend.Service
                     data = null
                 };
             }
-                // Get Year
+            // Get Year
             int getYear = DateTime.Now.Year;
             // Get Student Id
             long getId = await _studentRepository.GetNextStudentNumber();

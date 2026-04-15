@@ -11,6 +11,6 @@ namespace Backend.Backend.Interface.RepositoryInterface
         Task DeleteAsync(Student student);
         Task<Program_?> GetProgramByIdAsync(int Id);
         Task<long> GetNextStudentNumber();
-
+        Task<bool> CheckUserIfTaken(int uId);
     }
 }

@@ -95,11 +95,18 @@ namespace Backend.Backend.Controller
         //[HttpPut("{id:int}")]
         //public async Task<IActionResult> Update(int id, AddUserDTO dto)
         //{
-        //    var user = await _userService.UpdateAsync(id, dto);
-        //    if (user == null)
-        //        return NotFound($"User with ID {id} not found.");
+        //    try { 
+        //        var user = await _userService.UpdateAsync(id, dto);
+        //        if (user == null)
+        //            return NotFound($"User with ID {id} not found.");
 
-        //    return Ok(user);
+        //        return Ok(user);
+        //    }
+        //    catch (Exception x)
+        //    {
+        //        // Internal Error
+        //        return BadRequest($"An Error \"{x}\" Occured");
+        //    }
         //}
 
         [HttpDelete("{id:int}")]
