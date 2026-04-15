@@ -16,7 +16,10 @@ namespace Backend.Backend.Repository
 
         public async Task<Teacher?> GetByIdAsync(int ID)
         {
-            return await _db.Teachers.FindAsync(ID);
+            return await _db.Teachers
+                .FromSqlRaw(@"SELECT * FROM ""Students"" 
+                  WHERE CAST(SPLIT_PART(""DocumentSeries"", '-', 3) AS INT) = {0}", ID)
+                .FirstOrDefaultAsync();
         }
 
         public async Task AddAsync(Teacher teacher)

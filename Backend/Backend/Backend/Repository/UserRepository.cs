@@ -16,7 +16,10 @@ namespace Backend.Backend.Repository
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _db.Users.FindAsync(id);
+            return await _db.Users
+                .FromSqlRaw(@"SELECT * FROM ""Students"" 
+                  WHERE CAST(SPLIT_PART(""DocumentSeries"", '-', 3) AS INT) = {0}", id)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<User?> GetByEmailOrUsernameAsync(string emailOrUsername)
