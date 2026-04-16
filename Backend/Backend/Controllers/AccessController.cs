@@ -48,7 +48,7 @@ namespace Backend.Backend.Controllers
             try { 
 
                 var accesses = await _accessService.GetAllAsync();
-                if (!accesses.Any())
+                if (!(accesses?.Data?.Any() ?? false))
                     return NotFound("No Access Records Found");
 
                 return Ok(accesses);

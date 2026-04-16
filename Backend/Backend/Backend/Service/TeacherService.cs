@@ -14,31 +14,53 @@ namespace Backend.Backend.Service
             _teacherRepository = teacherRepository;
         }
 
-        public async Task<IEnumerable<GetTeacherDTO>> GetAllAsync()
+        public async Task<ResponseDTO<IEnumerable<GetTeacherDTO>>> GetAllAsync()
         {
             var teachers = await _teacherRepository.GetAllAsync();
-            return teachers.Select(t => new GetTeacherDTO
+            if (teachers is null || !teachers.Any())
+                return new ResponseDTO<IEnumerable<GetTeacherDTO>>
+                {
+                    Status_code= 404,
+                    Data = null
+                };
+            var data = teachers.Select(t => new GetTeacherDTO
             {
                 User_ID = t.User_ID,
                 DocumentSeries = t.DocumentSeries,
                 DepartmentId = t.DepartmentId,
             });
+            return new ResponseDTO<IEnumerable<GetTeacherDTO>>
+            {
+                Status_code = 200,
+                Data = data
+            };
         }
 
-        public async Task<GetTeacherDTO?> GetByIdAsync(int id)
+        public async Task<ResponseDTO<GetTeacherDTO>> GetByIdAsync(int id)
         {
             var t = await _teacherRepository.GetByIdAsync(id);
-            if (t == null) return null;
+            if (t == null)
+                return new ResponseDTO<GetTeacherDTO>
+                {
+                    Status_code = 404,
+                    Data = null
+                };
 
-            return new GetTeacherDTO
+            var data = new GetTeacherDTO
             {
                 User_ID = t.User_ID,
                 DocumentSeries = t.DocumentSeries,
                 DepartmentId = t.DepartmentId,
             };
+
+            return new ResponseDTO<GetTeacherDTO>
+            {
+                Status_code = 200,
+                Data = data
+            };
         }
 
-        public async Task<GetTeacherDTO> AddAsync(AddTeacherDTO dto)
+        public async Task<ResponseDTO<GetTeacherDTO>> AddAsync(AddTeacherDTO dto)
         {
             // Get Department
             var getDepartment = await _teacherRepository.GetDepartmentById(dto.DepartmentId);
@@ -63,27 +85,44 @@ namespace Backend.Backend.Service
 
             await _teacherRepository.AddAsync(teacher);
 
-            return new GetTeacherDTO
+           var data = new GetTeacherDTO
             {
                 User_ID = teacher.User_ID,
                 DocumentSeries = teacher.DocumentSeries,
                 DepartmentId = teacher.DepartmentId,
             };
+
+            return new ResponseDTO<GetTeacherDTO>
+            {
+                Status_code = 200,
+                Data =data
+            };
         }
 
-        public async Task<GetTeacherDTO?> UpdateAsync(int id, AddTeacherDTO dto)
+        public async Task<ResponseDTO<GetTeacherDTO>> UpdateAsync(int id, AddTeacherDTO dto)
         {
             var existing = await _teacherRepository.GetByIdAsync(id);
-            if (existing == null) return null;
+            if (existing == null)
+                return new ResponseDTO<GetTeacherDTO>
+                {
+                    Status_code = 404,
+                    Data = null
+                };
 
             existing.DepartmentId = dto.DepartmentId;
             existing.LastUpdatedAt = DateTime.UtcNow;
             await _teacherRepository.UpdateAsync(existing);
 
-            return new GetTeacherDTO
+            var data = new GetTeacherDTO
             {
                 User_ID = existing.User_ID,
                 DepartmentId = existing.DepartmentId,
+            };
+
+            return new ResponseDTO<GetTeacherDTO>
+            {
+                Status_code = 200,
+                Data =data
             };
         }
 

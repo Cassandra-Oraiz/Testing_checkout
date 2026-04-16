@@ -47,7 +47,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var enrollments = await _enrollmentService.GetAllAsync();
-                if (!enrollments.Any())
+                if (!(enrollments?.Data?.Any() ?? false))
                     return NotFound("No Enrollments Found");
 
                 return Ok(enrollments);

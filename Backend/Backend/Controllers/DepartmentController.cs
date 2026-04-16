@@ -47,7 +47,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var departments = await _departmentService.GetAllAsync();
-                if (!departments.Any())
+                if (!(departments?.Data?.Any() ?? false))
                     return NotFound("No Departments Found");
 
                 return Ok(departments);
@@ -123,8 +123,8 @@ namespace Backend.Backend.Controllers
         /// <code>
         /// POST /AttendanceManagement/Department
         /// {
-        ///   "name": "Computer Science",
-        ///   "description": "Handles IT-related programs"
+        ///   "name": "Basic Education",
+        ///   "description": "Range From Grade 1 to Grade 12 (Senior High)"
         /// }
         /// </code>
         /// </remarks>

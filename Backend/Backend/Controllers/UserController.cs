@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Backend.Backend.DTO;
+using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
 
 namespace Backend.Backend.Controller
@@ -20,7 +20,7 @@ namespace Backend.Backend.Controller
         {
             try { 
                 var users = await _userService.GetAllAsync();
-                if (!users.Any())
+                if (!(users.Data?.Any() ?? false))
                     return NotFound("No users found.");
 
                 return Ok(users);

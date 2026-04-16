@@ -47,7 +47,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var courses = await _courseService.GetAllAsync();
-                if (!courses.Any())
+                if (!(courses?.Data?.Any() ?? false))
                     return NotFound("No Courses Found");
 
                 return Ok(courses);

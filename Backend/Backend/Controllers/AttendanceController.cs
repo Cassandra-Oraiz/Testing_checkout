@@ -47,7 +47,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var attendances = await _attendanceService.GetAllAsync();
-                if (!attendances.Any())
+                if (!(attendances?.Data?.Any() ?? false))
                     return NotFound("No Attendance Records Found");
 
                 return Ok(attendances);

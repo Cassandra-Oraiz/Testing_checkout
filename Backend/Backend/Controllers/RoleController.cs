@@ -32,7 +32,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var roles = await _roleService.GetAllAsync();
-                if (!roles.Any())
+                if (!(roles?.Data?.Any() ?? false))
                     return NotFound("No Roles Found");
 
                 return Ok(roles);

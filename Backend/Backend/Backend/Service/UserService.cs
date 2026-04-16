@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Backend.Backend.DTO;
+using Backend.Backend.DTOs;
 using Backend.Backend.Interface.RepositoryInterface;
 using Backend.Backend.Interface.ServiceInterface;
 using Backend.Backend.Model;
@@ -17,10 +17,17 @@ namespace Backend.Backend.Service
             _userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<GetUserDTO>> GetAllAsync()
+        public async Task<ResponseDTO<IEnumerable<GetUserDTO>>> GetAllAsync()
         {
             var users = await _userRepository.GetAllAsync();
-            return users.Select(u => new GetUserDTO
+            if (users is null || !users.Any())
+                return new ResponseDTO<IEnumerable<GetUserDTO>>
+                {
+                    Status_code= 404,
+                    Data = Enumerable.Empty<GetUserDTO>()
+                };
+
+            var data = users.Select(u => new GetUserDTO
             {
                 DocumentSeries = u.DocumentSeries,
                 Full_Name = u.Full_Name,
@@ -31,14 +38,25 @@ namespace Backend.Backend.Service
                 Address = u.Address,
                 UserGroup_ID = u.UserGroup_ID,
             });
+
+            return new ResponseDTO<IEnumerable<GetUserDTO>>
+            {
+                Status_code = 200,
+                Data = data
+            };
         }
 
-        public async Task<GetUserDTO?> GetByIdAsync(int id)
+        public async Task<ResponseDTO<GetUserDTO>> GetByIdAsync(int id)
         {
             var u = await _userRepository.GetByIdAsync(id);
-            if (u == null) return null;
+            if (u == null)
+                return new ResponseDTO<GetUserDTO>
+                {
+                    Status_code = 404,
+                    Data = null
+                };
 
-            return new GetUserDTO
+            var data = new GetUserDTO
             {
                 DocumentSeries = u.DocumentSeries,
                 Full_Name = u.Full_Name,
@@ -49,15 +67,21 @@ namespace Backend.Backend.Service
                 Address = u.Address,
                 UserGroup_ID = u.UserGroup_ID,
             };
+
+            return new ResponseDTO<GetUserDTO>
+            {
+                Status_code = 200,
+                Data = data
+            };
         }
 
-        public async Task<UserResponse> AddAsync(AddUserDTO userDto)
+        public async Task<ResponseDTO<GetUserDTO>> AddAsync(AddUserDTO userDto)
         {
             // This will check if the email exist
             User? DBEmails = await _userRepository.GetByEmailOrUsernameAsync(userDto.Email);
             if (DBEmails != null)
             {
-                return new UserResponse
+                return new ResponseDTO<GetUserDTO>
                 {
                     Status_code = 422, //422 Unprocessable Content: Understands the request but cannot process ("Email is already used")
                     Data = null
@@ -71,7 +95,7 @@ namespace Backend.Backend.Service
             //If email does not match, return with 404 as not found and 403 as Access Denied
             if (statcode_roleCheck == 404)
             {
-                return new UserResponse
+                return new ResponseDTO<GetUserDTO>
                 { 
                     Status_code = 403, //403 access_denied: You are not authorized to use the specific service with that account.
                     Data = null
@@ -115,7 +139,7 @@ namespace Backend.Backend.Service
                 UserGroup_ID = user.UserGroup_ID
             };
 
-            return new UserResponse
+            return new ResponseDTO<GetUserDTO>
             {
                 Status_code = 200,
                 Data = show

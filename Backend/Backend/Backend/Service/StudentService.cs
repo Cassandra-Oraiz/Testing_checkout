@@ -14,10 +14,17 @@ namespace Backend.Backend.Service
             _studentRepository = studentRepository;
         }
 
-        public async Task<IEnumerable<GetStudentDTO>> GetAllAsync()
+        public async Task<ResponseDTO<IEnumerable<GetStudentDTO>>> GetAllAsync()
         {
             var students = await _studentRepository.GetAllAsync();
-            return students.Select(s => new GetStudentDTO
+            if (!students.Any() || !students.Any())
+                return new ResponseDTO<IEnumerable<GetStudentDTO>>
+                {
+                    Status_code = 404,
+                    Data = Enumerable.Empty<GetStudentDTO>()
+                };
+
+            var data = students.Select(s => new GetStudentDTO
             {
                 User_ID = s.User_ID,
                 DocumentSeries = s.DocumentSeries,
@@ -25,14 +32,25 @@ namespace Backend.Backend.Service
                 Department_ID = s.Department_ID,
                 Year_Level = s.Year_Level,
             });
+
+            return new ResponseDTO<IEnumerable<GetStudentDTO>>
+            {
+                Status_code = 200,
+                Data = data
+            };
         }
 
-        public async Task<GetStudentDTO?> GetByIdAsync(int id)
+        public async Task<ResponseDTO<GetStudentDTO>> GetByIdAsync(int id)
         {
             var s = await _studentRepository.GetByIdAsync(id);
-            if (s == null) return null;
+            if (s == null)
+                return new ResponseDTO<GetStudentDTO>
+                {
+                    Status_code = 404,
+                    Data = null
+                };
 
-            return new GetStudentDTO
+            var data = new GetStudentDTO
             {
                 User_ID = s.User_ID,
                 DocumentSeries = s.DocumentSeries,
@@ -40,18 +58,25 @@ namespace Backend.Backend.Service
                 Department_ID = s.Department_ID,
                 Year_Level = s.Year_Level,
             };
+
+            return new ResponseDTO<GetStudentDTO>
+            {
+                Status_code = 200,
+                Data = data
+            };
         }
 
-        public async Task<StudentResponse> AddAsync(AddStudentDTO dto)
+        public async Task<ResponseDTO<GetStudentDTO>> AddAsync(AddStudentDTO dto)
         {
             // Get Program
             var get_program = await _studentRepository.GetProgramByIdAsync(dto.Program_ID);
 
             // Check if User is Taken
             if (await _studentRepository.CheckUserIfTaken(dto.User_ID))
-                return new StudentResponse()
-                { Status_Code = 409,
-                    data = null
+                return new ResponseDTO<GetStudentDTO>
+                { 
+                    Status_code = 409,
+                    Data = null
                 };
 
             // Get Student Program's Ackronym
@@ -59,10 +84,10 @@ namespace Backend.Backend.Service
             // check if the there are program or THE PROGRAM NAME IS NOT CAPITAL 
             if (getStudentProgram is null)
             {
-                return new StudentResponse
+                return new ResponseDTO<GetStudentDTO>
                 {
-                    Status_Code = 503,
-                    data = null
+                    Status_code = 503,
+                    Data = null
                 };
             }
             // Get Year
@@ -94,18 +119,23 @@ namespace Backend.Backend.Service
                 Year_Level = student.Year_Level,
             };
 
-            return new StudentResponse
+            return new ResponseDTO<GetStudentDTO>
             {
-                Status_Code = 200,
-                data = data
+                Status_code = 200,
+                Data = data
             };
         }
 
-        public async Task<GetStudentDTO?> UpdateAsync(int id, AddStudentDTO dto)
+        public async Task<ResponseDTO<GetStudentDTO>> UpdateAsync(int id, AddStudentDTO dto)
         {
             var existing = await _studentRepository.GetByIdAsync(id);
-            if (existing == null) return null;
-
+            if (existing == null)
+                return new ResponseDTO<GetStudentDTO>
+                {
+                    Status_code = 404,
+                    Data = null
+                }
+                ;
             existing.Program_ID = dto.Program_ID;
             existing.Department_ID = dto.Department_ID;
             existing.Year_Level = dto.Year_Level;
@@ -113,13 +143,19 @@ namespace Backend.Backend.Service
 
             await _studentRepository.UpdateAsync(existing);
 
-            return new GetStudentDTO
+            var data = new GetStudentDTO
             {
                 User_ID = existing.User_ID,
                 DocumentSeries = existing.DocumentSeries,
                 Program_ID = existing.Program_ID,
                 Department_ID = existing.Department_ID,
                 Year_Level = existing.Year_Level,
+            };
+
+            return new ResponseDTO<GetStudentDTO>
+            {
+                Status_code = 200,
+                Data= data
             };
         }
 

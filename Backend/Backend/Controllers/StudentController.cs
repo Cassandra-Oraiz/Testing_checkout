@@ -21,7 +21,7 @@ namespace Backend.Backend.Controller
         {
             try { 
                 var students = await _studentService.GetAllAsync();
-                if (!students.Any())
+                if (!(students.Data?.Any() ?? false))
                     return NotFound("No students found.");
 
                 return Ok(students);
@@ -56,12 +56,12 @@ namespace Backend.Backend.Controller
             try { 
                 var student = await _studentService.AddAsync(dto);
                 // Throw Error if Program Does not Exist or Name Sense is Bad, Only for last chance error or last defense if bug exist
-                if (student.Status_Code == 503)
+                if (student.Status_code == 503)
                 {
                     return StatusCode(StatusCodes.Status503ServiceUnavailable, "Service Unavailable: Program Does not Exist or The Program does not have");
                 }
 
-                if (student.Status_Code == 409)
+                if (student.Status_code == 409)
                     return Conflict($"Status Code 409 - Conflict: User is Already Taken, Please Double Check if The Inputted User is Correct");
 
                 return Ok(student);

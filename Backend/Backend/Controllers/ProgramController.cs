@@ -32,7 +32,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var programs = await _programService.GetAllAsync();
-                if (!programs.Any())
+                if (!(programs?.Data?.Any() ?? false))
                     return NotFound("No Programs Found");
 
                 return Ok(programs);

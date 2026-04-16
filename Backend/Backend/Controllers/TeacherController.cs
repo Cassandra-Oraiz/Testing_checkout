@@ -20,7 +20,7 @@ namespace Backend.Backend.Controller
         {
             try { 
                 var teachers = await _teacherService.GetAllAsync();
-                if (!teachers.Any())
+                if (!(teachers.Data?.Any() ?? false))
                     return NotFound("No teachers found.");
 
                 return Ok(teachers);

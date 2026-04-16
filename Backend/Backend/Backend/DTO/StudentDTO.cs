@@ -16,10 +16,4 @@
         public required int Department_ID { get; set; }
         public required int Year_Level { get; set; }
     }
-
-    public class StudentResponse
-    {
-        public required int Status_Code { get; set; }
-        public GetStudentDTO? data { get; set; }
-    }
 }

@@ -20,7 +20,7 @@ namespace Backend.Backend.Controller
         {
             try { 
                 var groups = await _userGroupService.GetAllAsync();
-                if (!groups.Any())
+                if (!(groups.Data?.Any() ?? false))
                     return NotFound("No user groups found.");
 
                 return Ok(groups);

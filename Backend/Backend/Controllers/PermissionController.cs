@@ -32,7 +32,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var permissions = await _permissionService.GetAllAsync();
-                if (!permissions.Any())
+                if (!(permissions?.Data?.Any() ?? false))
                     return NotFound("No Permissions Found");
 
                 return Ok(permissions);

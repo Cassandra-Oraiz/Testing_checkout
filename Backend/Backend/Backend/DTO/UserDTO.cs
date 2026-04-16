@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Backend.Backend.Model;
 
-namespace Backend.Backend.DTO
+namespace Backend.Backend.DTOs
 {
     public class GetUserDTO
     {
@@ -37,11 +37,5 @@ namespace Backend.Backend.DTO
     {
         public bool isSuccess { get; set; }  
         public string? Detail { get; set; }
-    }
-
-    public class UserResponse
-    {
-        public int Status_code { get; set; }
-        public GetUserDTO? Data { get; set; }
     }
 }

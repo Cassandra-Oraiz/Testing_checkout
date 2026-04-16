@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Backend.Backend.Model;
+using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
 
 namespace Backend.Backend.Controllers
@@ -20,7 +20,7 @@ namespace Backend.Backend.Controllers
         {
             try { 
                 var schedules = await _scheduleService.GetAllAsync();
-                if (!schedules.Any())
+                if (!(schedules.Data?.Any() ?? false))
                     return NotFound("No schedules found");
 
                 return Ok(schedules);
@@ -50,10 +50,12 @@ namespace Backend.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Schedule schedule)
+        public async Task<IActionResult> Add(AddScheduleDTO schedule)
         {
             try { 
                 var added = await _scheduleService.AddAsync(schedule);
+                if (added.Status_code == 404)
+                    return NotFound("404!: Course ID not Found");
                 return Ok(added);
             }
             catch (Exception x)
@@ -64,7 +66,7 @@ namespace Backend.Backend.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, Schedule schedule)
+        public async Task<IActionResult> Update(int id, AddScheduleDTO schedule)
         {
             try { 
                 var updated = await _scheduleService.UpdateAsync(id, schedule);
