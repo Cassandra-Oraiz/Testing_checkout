@@ -267,9 +267,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Backend.Model.Student", b =>
                 {
-                    b.Property<Guid>("Student_ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("Student_ID")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -281,6 +280,11 @@ namespace Backend.Migrations
                     b.Property<int>("Department_ID")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DocumentSeries")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -289,6 +293,9 @@ namespace Backend.Migrations
                         .HasColumnType("character varying(210)");
 
                     b.Property<int>("Program_ID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("User_ID")
                         .HasColumnType("integer");
 
                     b.Property<int>("Year_Level")
@@ -301,9 +308,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Backend.Model.Teacher", b =>
                 {
-                    b.Property<Guid>("Teacher_ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("Teacher_ID")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -312,10 +318,13 @@ namespace Backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Department")
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DocumentSeries")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
 
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -324,6 +333,9 @@ namespace Backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<int>("User_ID")
+                        .HasColumnType("integer");
+
                     b.HasKey("Teacher_ID");
 
                     b.ToTable("Teachers");
@@ -331,9 +343,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Backend.Model.User", b =>
                 {
-                    b.Property<Guid>("User_ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("User_ID")
+                        .HasColumnType("text");
 
                     b.Property<string>("Address")
                         .HasMaxLength(512)
@@ -349,6 +360,11 @@ namespace Backend.Migrations
                         .HasMaxLength(210)
                         .HasColumnType("character varying(210)");
 
+                    b.Property<string>("DocumentSeries")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -358,10 +374,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<char?>("Gender")
-                        .HasMaxLength(1)
-                        .HasColumnType("character(1)");
 
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -378,6 +390,10 @@ namespace Backend.Migrations
                     b.Property<string>("Phone_Number")
                         .HasMaxLength(13)
                         .HasColumnType("character varying(13)");
+
+                    b.Property<char?>("Sex")
+                        .HasMaxLength(1)
+                        .HasColumnType("character(1)");
 
                     b.Property<int?>("UserGroup_ID")
                         .HasColumnType("integer");

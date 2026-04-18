@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Backend.Model
 {
@@ -18,6 +17,10 @@ namespace Backend.Backend.Model
         public string User_ID { get; set; } = Ulid.NewUlid().ToString();
 
         [Required]
+        [MaxLength(16)]
+        public required string DocumentSeries { get; set; }
+
+        [Required]
         [MaxLength(255)]
         public required string Full_Name { get; set; }
 
@@ -33,7 +36,7 @@ namespace Backend.Backend.Model
         public string? Phone_Number { get; set; }
 
         [MaxLength(1)]
-        public char? Gender { get; set; }
+        public char? Sex { get; set; }
 
         public DateTime? Birth_Date { get; set; }
 
