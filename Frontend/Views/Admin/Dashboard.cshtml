@@ -45,8 +45,9 @@
         <div class="d-flex flex-wrap gap-2 ms-auto align-items-center">
             <select class="form-select form-select-sm" id="filterRole" style="width:120px;">
                 <option value="">All Roles</option>
-                <option value="student">Students</option>
+                <option value="admin">Admin</option>
                 <option value="teacher">Teachers</option>
+                <option value="student">Students</option>
             </select>
             <select class="form-select form-select-sm" id="filterStatus" style="width:130px;">
                 <option value="">All Status</option>
@@ -100,7 +101,7 @@
                 <h6 class="text-muted mb-3"><i class="bi bi-person-fill"></i> User Account</h6>
                 <div class="row g-2">
                     <div class="col-md-6"><label class="form-label">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control" id="addFullName" placeholder="e.g. Juan Dela Cruz"></div>
-                    <div class="col-md-6"><label class="form-label">Email <span class="text-danger">*</span></label><input type="email" class="form-control" id="addEmail" placeholder="user@dbtc.edu.ph"></div>
+                    <div class="col-md-6"><label class="form-label">Email <span class="text-danger">*</span></label><input type="email" class="form-control" id="addEmail" placeholder="user@domain.dbtc-cebu"></div>
                     <div class="col-md-6"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" id="addPassword"></div>
                     <div class="col-md-6"><label class="form-label">Phone</label><input type="text" class="form-control" id="addPhone" placeholder="09xxxxxxxxx"></div>
                     <div class="col-md-4">
@@ -207,30 +208,45 @@
 
 @section Scripts {
     <script>
-        var STUDENT_GID=3, TEACHER_GID=2;
-        var allAccounts=[], allStudents=[], allTeachers=[], allUsers=[], allPrograms=[], allAtt=[], pg;
+        // userGroup_ID: 1=admin, 2=teacher, 3=student (adjust if different in your DB)
+        var STUDENT_GID=3, TEACHER_GID=2, ADMIN_GID=1;
+        var allAccounts=[], allStudents=[], allTeachers=[], allUsers=[], allPrograms=[], allDepts=[], allAtt=[], pg;
 
         function toUtcIso(v){ return v?new Date(v).toISOString():new Date().toISOString(); }
         function nameOf(a){ return (a._name||'').toLowerCase(); }
 
+        function roleLabel(gid){
+            if(gid==ADMIN_GID) return '<span style="background:#FEE2E2;color:#B91C1C;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Admin</span>';
+            if(gid==TEACHER_GID) return '<span style="background:#EDE9FE;color:#6D28D9;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Teacher</span>';
+            return '<span style="background:#DBEAFE;color:var(--accent);font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Student</span>';
+        }
+        function roleColor(gid){
+            if(gid==ADMIN_GID) return '#B91C1C';
+            if(gid==TEACHER_GID) return '#7C3AED';
+            return 'var(--accent)';
+        }
+
         function renderRow(a,i){
             var init=(a._name[0]||'?').toUpperCase();
-            var roleBadge=a._role==='teacher'
-                ?'<span style="background:#EDE9FE;color:#6D28D9;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Teacher</span>'
-                :'<span style="background:#DBEAFE;color:var(--accent);font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Student</span>';
+            var roleBadge=roleLabel(a._ugid);
             var statusBadge=a._inactive
                 ?'<span style="background:#F1F5F9;color:#64748B;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Inactive</span>'
                 :'<span style="background:#DCFCE7;color:#166534;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">Active</span>';
             var rowStyle=a._inactive?'style="opacity:.65;"':'';
-            var bgColor=a._role==='teacher'?'#7C3AED':'var(--accent)';
-            var actions=a._role==='student'
-                ?'<button class="btn btn-sm btn-outline-primary btn-icon edit-btn" data-sid="'+a._sid+'" data-uid="'+a._uid+'" data-ugid="'+a._ugid+'" title="Edit"><i class="bi bi-pencil"></i></button>'
-                 +'<button class="btn btn-sm btn-outline-danger btn-icon del-btn" data-sid="'+a._sid+'" data-uid="'+a._uid+'" data-name="'+a._name+'" title="Delete"><i class="bi bi-trash3"></i></button>'
-                :'<a href="/Teacher/Index" class="btn btn-sm btn-outline-secondary btn-icon" title="Manage"><i class="bi bi-box-arrow-up-right"></i></a>';
+            var actions='';
+            if(a._ugid===STUDENT_GID){
+                actions='<button class="btn btn-sm btn-outline-primary btn-icon edit-btn" data-sid="'+a._sid+'" data-uid="'+a._uid+'" data-ugid="'+a._ugid+'" title="Edit"><i class="bi bi-pencil"></i></button>'
+                       +'<a href="/Admin/ViewStudentProfile?userId='+a._uid+'" class="btn btn-sm btn-outline-info btn-icon" title="View Profile"><i class="bi bi-person-lines-fill"></i></a>'
+                       +'<button class="btn btn-sm btn-outline-danger btn-icon del-btn" data-sid="'+a._sid+'" data-uid="'+a._uid+'" data-name="'+a._name+'" title="Delete"><i class="bi bi-trash3"></i></button>';
+            } else if(a._ugid===TEACHER_GID){
+                actions='<a href="/Admin/ViewTeacherProfile?userId='+a._uid+'" class="btn btn-sm btn-outline-info btn-icon" title="View Profile"><i class="bi bi-person-lines-fill"></i></a>';
+            } else {
+                actions='<span class="text-muted" style="font-size:12px;">Admin</span>';
+            }
             return '<tr '+rowStyle+'>'
                 +'<td>'+(i+1)+'</td>'
                 +'<td><div class="d-flex align-items-center gap-2">'
-                +'<div style="width:32px;height:32px;border-radius:50%;background:'+bgColor+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;">'+init+'</div>'
+                +'<div style="width:32px;height:32px;border-radius:50%;background:'+roleColor(a._ugid)+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;">'+init+'</div>'
                 +a._name+'</div></td>'
                 +'<td>'+a._email+'</td>'
                 +'<td>'+roleBadge+'</td>'
@@ -246,7 +262,9 @@
             var status=$('#filterStatus').val();
             var sort=$('#sortBy').val();
             var result=allAccounts.filter(function(a){
-                if(role&&a._role!==role) return false;
+                if(role==='admin'&&a._ugid!==ADMIN_GID) return false;
+                if(role==='teacher'&&a._ugid!==TEACHER_GID) return false;
+                if(role==='student'&&a._ugid!==STUDENT_GID) return false;
                 if(status==='inactive'&&!a._inactive) return false;
                 if(status==='active'&&a._inactive) return false;
                 if(q&&!a._name.toLowerCase().includes(q)&&!a._email.toLowerCase().includes(q)) return false;
@@ -260,16 +278,24 @@
 
         function buildAccounts(){
             allAccounts=[];
-            allStudents.forEach(function(s){
-                var u=allUsers.find(function(x){ return String(x.user_ID)===String(s.user_ID||s.userId); })||{};
-                var p=allPrograms.find(function(x){ return String(x.id)===String(s.program_ID); });
-                var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-30);
-                var inactive=!allAtt.some(function(a){ return new Date(a.date||a.attendanceDate)>=cutoff; })&&allAtt.length>0;
-                allAccounts.push({_role:'student',_sid:s.student_ID||s.id,_uid:s.user_ID||s.userId,_ugid:u.userGroup_ID||STUDENT_GID,_name:u.full_Name||'—',_email:u.email||'—',_gender:u.gender||'',_dept:p?(p.name||p.program_Name||p.title||''):(s.program_ID?'Program #'+s.program_ID:'—'),_inactive:inactive});
-            });
-            allTeachers.forEach(function(t){
-                var u=allUsers.find(function(x){ return String(x.user_ID)===String(t.user_ID||t.userId); })||{};
-                allAccounts.push({_role:'teacher',_sid:null,_uid:t.user_ID||t.userId,_ugid:TEACHER_GID,_name:u.full_Name||'—',_email:u.email||'—',_gender:u.gender||'',_dept:t.department||'—',_inactive:false});
+            // Build from allUsers — every account in the system
+            allUsers.forEach(function(u){
+                var gid = u.userGroup_ID || u.userGroupId || 0;
+                var sid=null, dept='—';
+                if(gid===STUDENT_GID){
+                    var s=allStudents.find(function(x){ return String(x.user_ID||x.userId)===String(u.user_ID); });
+                    if(s){
+                        sid=s.student_ID||s.id;
+                        var p=allPrograms.find(function(x){ return String(x.id)===String(s.program_ID); });
+                        dept=p?(p.name||p.program_Name||p.title||''):(s.program_ID?'Program #'+s.program_ID:'—');
+                    }
+                } else if(gid===TEACHER_GID){
+                    var t=allTeachers.find(function(x){ return String(x.user_ID||x.userId)===String(u.user_ID); });
+                    dept = t&&t.department ? t.department : '—';
+                } else if(gid===ADMIN_GID){
+                    dept = 'Administration';
+                }
+                allAccounts.push({_ugid:gid,_sid:sid,_uid:u.user_ID,_name:u.full_Name||'—',_email:u.email||'—',_gender:u.gender||'',_dept:dept,_inactive:false});
             });
             applyFilter();
         }
@@ -303,6 +329,7 @@
                 allPrograms=Array.isArray(pR[0])?pR[0]:[];
                 buildAccounts();
                 $('#statStudents').text(allStudents.length);
+                $('#statTeachers').text(allTeachers.length);
             }).fail(function(){ showToast('Failed to load data.','error'); });
         }
 
