@@ -11,6 +11,7 @@
     var userRole = isTeacher ? "Teacher" : isStudent ? "Student" : "Admin";
     var profileUrl = isTeacher ? "/Teacher/Profile" : isStudent ? "/Student/Profile" : "/Admin/Profile";
     var homeUrl = isTeacher ? "/Teacher/Dashboard" : isStudent ? "/Student/Profile" : "/Admin/Dashboard";
+    var mailUrl = isTeacher ? "/Teacher/Mail" : isStudent ? "/Student/Mail" : "/Admin/Mail";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -57,6 +58,10 @@
                     <a class="sidebar-link @(currentController == "Admin" && currentAction == "AttendanceHistory" ? "active" : "")" href="/Admin/AttendanceHistory">
                         <i class="bi bi-clock-history"></i> History
                     </a>
+                    <a class="sidebar-link @(currentController == "Admin" && currentAction == "Mail" ? "active" : "")" href="/Admin/Mail">
+                        <i class="bi bi-envelope"></i> Mail
+                        <span class="badge-dot ms-auto" id="sidebarMailDot" style="display:none;background:#EF4444;width:8px;height:8px;border-radius:50%;"></span>
+                    </a>
                     <div class="sidebar-label">ACCOUNT</div>
                     <a class="sidebar-link @(currentAction == "Profile" ? "active" : "")" href="/Admin/Profile">
                         <i class="bi bi-person-circle"></i> Profile
@@ -77,6 +82,10 @@
                     <a class="sidebar-link @(currentAction == "Attendance" ? "active" : "")" href="/Teacher/Attendance">
                         <i class="bi bi-calendar-check"></i> Take Attendance
                     </a>
+                    <a class="sidebar-link @(currentController == "Teacher" && currentAction == "Mail" ? "active" : "")" href="/Teacher/Mail">
+                        <i class="bi bi-envelope"></i> Mail
+                        <span class="badge-dot ms-auto" id="sidebarMailDot" style="display:none;background:#EF4444;width:8px;height:8px;border-radius:50%;"></span>
+                    </a>
                     <div class="sidebar-label">ACCOUNT</div>
                     <a class="sidebar-link @(currentAction == "Profile" ? "active" : "")" href="/Teacher/Profile">
                         <i class="bi bi-person-circle"></i> Profile
@@ -87,13 +96,18 @@
                 }
                 else if (isStudent)
                 {
-                    <div class="sidebar-label">PROFILE</div>
+                    <div class="sidebar-label">MAIN</div>
                     <a class="sidebar-link @(currentAction == "Profile" ? "active" : "")" href="/Student/Profile">
                         <i class="bi bi-person-circle"></i> My Profile
                     </a>
                     <a class="sidebar-link @(currentAction == "Courses" ? "active" : "")" href="/Student/Courses">
                         <i class="bi bi-journal-bookmark-fill"></i> My Courses
                     </a>
+                    <a class="sidebar-link @(currentController == "Student" && currentAction == "Mail" ? "active" : "")" href="/Student/Mail">
+                        <i class="bi bi-envelope"></i> Mail
+                        <span class="badge-dot ms-auto" id="sidebarMailDot" style="display:none;background:#EF4444;width:8px;height:8px;border-radius:50%;"></span>
+                    </a>
+                    <div class="sidebar-label">ACCOUNT</div>
                     <a class="sidebar-link" href="/Login/Logout">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
@@ -116,14 +130,6 @@
                 </div>
                 <div class="topbar-right">
 
-                    @* Envelope button — students and teachers only *@
-                    @if (isStudent || isTeacher)
-                    {
-                        <button class="topbar-icon" id="openMsgBtn" title="Send message" style="position:relative;">
-                            <i class="bi bi-envelope"></i>
-                        </button>
-                    }
-
                     @* Notification bell — all roles *@
                     <div class="dropdown">
                         <button class="topbar-icon" data-bs-toggle="dropdown" id="notifBellBtn" style="position:relative;">
@@ -144,12 +150,12 @@
                         </div>
                     </div>
 
-                    @* User dropdown *@
+                    @* User dropdown — shows full name *@
                     <div class="dropdown">
                         <a class="topbar-user" data-bs-toggle="dropdown" style="cursor:pointer;">
                             <div class="topbar-avatar">@userInitial</div>
                             <div class="topbar-user-info">
-                                <div class="topbar-user-name">@userName</div>
+                                <div class="topbar-user-name" id="headerFullName">@userName</div>
                                 <div class="topbar-user-role">@userRole</div>
                             </div>
                         </a>
@@ -169,53 +175,6 @@
             </footer>
         </div>
     </div>
-
-    @* Send Message Modal — students and teachers only *@
-    @if (isStudent || isTeacher)
-    {
-        <div class="modal fade" id="sendMsgModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><i class="bi bi-envelope-plus"></i> Send Message</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">To <span class="text-danger">*</span></label>
-                            <select class="form-select" id="msgTo">
-                                <option value="admin">Admin</option>
-                                @if (isStudent)
-                                {
-                                    <option value="teacher">My Teacher</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Type</label>
-                            <select class="form-select" id="msgType">
-                                <option value="message">General Message</option>
-                                <option value="excuse">Excuse Letter</option>
-                                <option value="concern">Concern / Report</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Subject <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="msgSubject" placeholder="e.g. Absent on April 10 due to illness">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Message <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="msgBody" rows="5" placeholder="Write your message here…"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button class="btn btn-primary" id="sendMsgBtn"><i class="bi bi-send"></i> Send</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
 
     @* Attendance popup — Present / Absent / Late *@
     <div class="modal fade" id="attPopupModal" tabindex="-1">
@@ -315,6 +274,30 @@
     <script src="~/js/ajax/attendance.js"></script>
     <script src="~/js/ajax/courses.js"></script>
     <script src="~/js/ajax/dashboard.js"></script>
+    <script>
+        // Update header full name from API on page load
+        (function(){
+            var userId = '@Context.Session.GetString("UserId")';
+            if(userId){
+                fetch('/api/User/'+userId)
+                    .then(function(r){ return r.ok ? r.json() : null; })
+                    .then(function(u){ if(u && u.full_Name){ document.getElementById('headerFullName').textContent = u.full_Name; } })
+                    .catch(function(){});
+            }
+            // Sidebar mail dot — poll for unread
+            function checkMailDot(){
+                fetch('/api/Notifications')
+                    .then(function(r){ return r.json(); })
+                    .then(function(msgs){
+                        var unread = (Array.isArray(msgs)?msgs:[]).filter(function(m){ return !m.isRead; }).length;
+                        var dot = document.getElementById('sidebarMailDot');
+                        if(dot) dot.style.display = unread > 0 ? 'inline-block' : 'none';
+                    }).catch(function(){});
+            }
+            checkMailDot();
+            setInterval(checkMailDot, 30000);
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

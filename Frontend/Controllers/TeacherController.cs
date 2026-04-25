@@ -49,5 +49,12 @@ namespace Frontend.Controllers
             var vm = new TeacherViewModel { CurrentPage = "Profile" };
             return View(vm);
         }
+
+        public IActionResult Mail()
+        {
+            var check = CheckSession(); if (check != null) return check;
+            var vm = new TeacherViewModel { CurrentPage = "Mail" };
+            return View(vm);
+        }
     }
 }

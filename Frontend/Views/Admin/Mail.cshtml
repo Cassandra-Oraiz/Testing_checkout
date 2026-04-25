@@ -1,4 +1,201 @@
-﻿@page
-@model Frontend.Views.Admin.MailModel
-@{
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Mail";
+    var userName = Context.Session.GetString("UserName") ?? "Admin";
+    var userId = Context.Session.GetString("UserId") ?? "";
+}
+<div class="page-header">
+    <div>
+        <h4><i class="bi bi-envelope"></i> Mail</h4>
+        <ol class="breadcrumb"><li class="breadcrumb-item active">Mail</li></ol>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-title"><i class="bi bi-send"></i> Compose Message</div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">To <span class="text-danger">*</span></label>
+                    <select class="form-select" id="msgTo">
+                        <option value="all">All Users</option>
+                        <option value="teacher">All Teachers</option>
+                        <option value="student">All Students</option>
+                    </select>
+                    <div class="mt-2" id="recipientNameBox" style="font-size:12px;color:#64748b;">
+                        Sending to: <span id="recipientLabel">All Users</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" id="msgType">
+                        <option value="message">General Message</option>
+                        <option value="announcement">Announcement</option>
+                        <option value="concern">Concern / Notice</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Subject <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="msgSubject" placeholder="e.g. School Announcement">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Message <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="msgBody" rows="5" placeholder="Write your message here…"></textarea>
+                </div>
+                <button class="btn btn-primary w-100" id="sendMsgBtn"><i class="bi bi-send"></i> Send Message</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header flex-wrap gap-2">
+                <div class="card-header-title"><i class="bi bi-inbox"></i> Inbox &amp; Sent</div>
+                <div class="d-flex gap-2 ms-auto">
+                    <select class="form-select form-select-sm" id="filterMailType" style="width:130px;">
+                        <option value="">All</option>
+                        <option value="unread">Unread</option>
+                        <option value="read">Read</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary" id="markAllReadBtn"><i class="bi bi-check2-all"></i> Mark all read</button>
+                    <button class="btn btn-sm btn-outline-danger" id="clearAllMailBtn"><i class="bi bi-trash3"></i> Clear</button>
+                </div>
+            </div>
+            <div id="mailList" style="min-height:300px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Message Modal -->
+<div class="modal fade" id="viewMsgModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-envelope-open"></i> <span id="vmTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2" style="font-size:13px;color:#64748b;">
+                    <strong>From:</strong> <span id="vmFrom"></span> &nbsp;|&nbsp;
+                    <strong>To:</strong> Admin &nbsp;|&nbsp;
+                    <strong>Type:</strong> <span id="vmType"></span> &nbsp;|&nbsp;
+                    <strong>Date:</strong> <span id="vmDate"></span>
+                </div>
+                <hr>
+                <div id="vmBody" style="white-space:pre-wrap;font-size:14px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var allMails = [], currentUserId = '@userId', currentUserName = '@userName';
+
+        function renderMails(data) {
+            var filter = $('#filterMailType').val();
+            var list = data.filter(function(m){
+                if(filter === 'unread') return !m.isRead;
+                if(filter === 'read') return m.isRead;
+                return true;
+            });
+            if(!list.length){
+                $('#mailList').html('<div class="text-center text-muted py-5"><i class="bi bi-inbox" style="font-size:2.5rem;display:block;opacity:.3;"></i><div class="mt-2">No messages</div></div>');
+                return;
+            }
+            var html = '';
+            list.forEach(function(m){
+                var unread = !m.isRead;
+                var typeIcon = m.type === 'excuse' ? '<i class="bi bi-file-earmark-text text-warning"></i>' : m.type === 'concern' ? '<i class="bi bi-exclamation-triangle text-danger"></i>' : '<i class="bi bi-envelope text-primary"></i>';
+                var dt = m.createdAt ? new Date(m.createdAt).toLocaleString() : '';
+                html += '<div class="mail-item d-flex align-items-start gap-3 p-3 border-bottom' + (unread ? ' mail-unread' : '') + '" data-id="'+m.id+'" style="cursor:pointer;' + (unread ? 'background:#F0F7FF;' : '') + '">'
+                    + '<div style="font-size:20px;margin-top:2px;">' + typeIcon + '</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div class="d-flex justify-content-between"><strong style="font-size:13px;">' + (m.title || '(No subject)') + '</strong><span style="font-size:11px;color:#94A3B8;">' + dt + '</span></div>'
+                    + '<div style="font-size:12px;color:#64748B;">From: ' + (m.senderName || 'Unknown') + ' (' + (m.senderRole || '') + ')</div>'
+                    + '<div style="font-size:12px;color:#94A3B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (m.message || '') + '</div>'
+                    + '</div>'
+                    + (unread ? '<span class="badge bg-primary" style="font-size:10px;">New</span>' : '')
+                    + '</div>';
+            });
+            $('#mailList').html(html);
+        }
+
+        function loadMail(){
+            $.ajax({ url: '/api/Notifications', dataType: 'json',
+                success: function(data){
+                    allMails = Array.isArray(data) ? data : [];
+                    renderMails(allMails);
+                    var unread = allMails.filter(function(m){ return !m.isRead; }).length;
+                    var dot = document.getElementById('sidebarMailDot');
+                    if(dot) dot.style.display = unread > 0 ? 'inline-block' : 'none';
+                }
+            });
+        }
+
+        $(function(){
+            loadMail();
+
+            $('#msgTo').on('change', function(){
+                var v = $(this).val();
+                var labels = { all: 'All Users', teacher: 'All Teachers', student: 'All Students' };
+                $('#recipientLabel').text(labels[v] || v);
+            });
+
+            $('#sendMsgBtn').on('click', function(){
+                var to = $('#msgTo').val();
+                var subject = $('#msgSubject').val().trim();
+                var body = $('#msgBody').val().trim();
+                if(!subject){ showToast('Subject is required.','warning'); return; }
+                if(!body){ showToast('Message is required.','warning'); return; }
+                var toLabels = { all: 'All Users', teacher: 'All Teachers', student: 'All Students' };
+                $.ajax({ type:'POST', url:'/api/Notifications', contentType:'application/json',
+                    data: JSON.stringify({ recipientId: to, senderName: currentUserName, senderRole: 'admin', title: subject, message: body, type: $('#msgType').val() }),
+                    beforeSend: function(){ $('#page-loader').fadeIn(150); },
+                    success: function(){
+                        $('#page-loader').fadeOut(200);
+                        showToast('Message sent to ' + toLabels[to] + '.', 'success');
+                        $('#msgSubject,#msgBody').val('');
+                        loadMail();
+                    },
+                    error: function(){ $('#page-loader').fadeOut(200); showToast('Send failed.','error'); }
+                });
+            });
+
+            $(document).on('click', '.mail-item', function(){
+                var id = $(this).data('id');
+                var m = allMails.find(function(x){ return x.id == id; });
+                if(!m) return;
+                $('#vmTitle').text(m.title || '(No subject)');
+                $('#vmFrom').text((m.senderName || 'Unknown') + ' (' + (m.senderRole || '') + ')');
+                $('#vmType').text(m.type || 'message');
+                $('#vmDate').text(m.createdAt ? new Date(m.createdAt).toLocaleString() : '');
+                $('#vmBody').text(m.message || '');
+                $('#viewMsgModal').modal('show');
+                if(!m.isRead){
+                    $.ajax({ type:'PUT', url:'/api/Notifications/'+id+'/read', success: function(){ loadMail(); } });
+                }
+            });
+
+            $('#filterMailType').on('change', function(){ renderMails(allMails); });
+
+            $('#markAllReadBtn').on('click', function(){
+                var unread = allMails.filter(function(m){ return !m.isRead; });
+                var defs = unread.map(function(m){ return $.ajax({ type:'PUT', url:'/api/Notifications/'+m.id+'/read' }); });
+                if(!defs.length){ showToast('No unread messages.','info'); return; }
+                $.when.apply($, defs).done(function(){ loadMail(); showToast('All marked as read.','success'); });
+            });
+
+            $('#clearAllMailBtn').on('click', function(){
+                $.ajax({ type:'DELETE', url:'/api/Notifications',
+                    success: function(){ loadMail(); showToast('Mail cleared.','success'); }
+                });
+            });
+        });
+    </script>
 }

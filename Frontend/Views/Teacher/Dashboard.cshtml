@@ -2,9 +2,7 @@
     Layout = "_Layout";
     ViewData["Title"] = "Teacher Dashboard";
     var userName = Context.Session.GetString("UserName") ?? "Teacher";
-    var userEmail = Context.Session.GetString("UserEmail") ?? "";
     var userId = Context.Session.GetString("UserId") ?? "";
-    var userInit = userName.Length > 0 ? userName[0].ToString().ToUpper() : "T";
 }
 <div class="page-header">
     <div>
@@ -18,38 +16,18 @@
     <div class="col-md-3"><div class="stat-card"><div class="stat-icon red"><i class="bi bi-x-circle"></i></div><div><div class="stat-label">Absent Today</div><div class="stat-value" id="statAbsent">—</div></div></div></div>
     <div class="col-md-3"><div class="stat-card"><div class="stat-icon orange"><i class="bi bi-clock"></i></div><div><div class="stat-label">Late Today</div><div class="stat-value" id="statLate">—</div></div></div></div>
 </div>
-<div class="row g-3">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-header-title"><i class="bi bi-people-fill"></i> Students</div>
-                <div class="search-bar"><i class="bi bi-search"></i><input type="text" class="form-control" id="tSearch" placeholder="Search..."></div>
-            </div>
-            <div class="table-wrapper">
-                <table class="table table-striped">
-                    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Gender</th><th>Year</th></tr></thead>
-                    <tbody id="tStudentBody"></tbody>
-                </table>
-            </div>
-            <div class="pagination-wrapper"><div id="tStudentPagination"></div></div>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <div class="card-header-title"><i class="bi bi-people-fill"></i> Students</div>
+        <div class="search-bar"><i class="bi bi-search"></i><input type="text" class="form-control" id="tSearch" placeholder="Search..."></div>
     </div>
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="profile-header">
-                <div class="profile-avatar">@userInit</div>
-                <div><div class="profile-name">@userName</div><div class="profile-role">Teacher</div></div>
-            </div>
-            <div class="card-body">
-                <div class="info-row"><i class="bi bi-envelope-fill"></i> @userEmail</div>
-                <div class="info-row" id="teacherDeptInfo"><i class="bi bi-building"></i> —</div>
-                <hr />
-                <a href="/Teacher/Attendance" class="btn btn-primary w-100"><i class="bi bi-clipboard2-check-fill"></i> Mark Attendance</a>
-                <a href="/Teacher/Profile" class="btn btn-outline-secondary w-100 mt-2"><i class="bi bi-person-circle"></i> My Profile</a>
-                <a href="/Login/Logout" class="btn btn-outline-danger w-100 mt-2"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </div>
+    <div class="table-wrapper">
+        <table class="table table-striped">
+            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Gender</th><th>Year</th></tr></thead>
+            <tbody id="tStudentBody"></tbody>
+        </table>
     </div>
+    <div class="pagination-wrapper"><div id="tStudentPagination"></div></div>
 </div>
 
 @section Scripts {
@@ -58,16 +36,6 @@
         var currentUserId = '@userId';
 
         $(function(){
-            // Load teacher dept info
-            if (currentUserId) {
-                $.ajax({ url: '/api/Teacher', dataType: 'json',
-                    success: function(teachers) {
-                        var t = (Array.isArray(teachers)?teachers:[]).find(function(x){ return (x.user_ID||x.userId)==currentUserId; });
-                        if (t && t.department) $('#teacherDeptInfo').html('<i class="bi bi-building"></i> '+t.department);
-                    }
-                });
-            }
-
             $.when(
                 $.ajax({ url: '/api/Student', dataType: 'json' }),
                 $.ajax({ url: '/api/User',    dataType: 'json' })

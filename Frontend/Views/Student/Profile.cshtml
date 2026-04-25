@@ -1,17 +1,39 @@
 ﻿@{
     Layout = "_Layout";
     ViewData["Title"] = "Student Profile";
+    var isAdminView = ViewData["IsAdminView"] as bool? ?? false;
+    var targetUserId = ViewData["TargetUserId"]?.ToString() ?? "";
+    var sessionUserId = Context.Session.GetString("UserId") ?? "";
+    var resolvedUserId = isAdminView && !string.IsNullOrEmpty(targetUserId) ? targetUserId : sessionUserId;
     var userName = Context.Session.GetString("UserName") ?? "Student";
     var userEmail = Context.Session.GetString("UserEmail") ?? "";
-    var userId = Context.Session.GetString("UserId") ?? "";
-    var userInit = userName.Length > 0 ? userName[0].ToString().ToUpper() : "S";
+    var userInit = isAdminView ? "S" : (userName.Length > 0 ? userName[0].ToString().ToUpper() : "S");
 }
+
+<input type="hidden" id="isAdminViewFlag" value="@(isAdminView ? "1" : "0")" />
+
 <div class="page-header">
     <div>
-        <h4><i class="bi bi-person-circle"></i> My Profile</h4>
-        <ol class="breadcrumb"><li class="breadcrumb-item active">Profile</li></ol>
+        <h4><i class="bi bi-person-circle"></i> @(isAdminView ? "Student Profile (Admin View)" : "My Profile")</h4>
+        <ol class="breadcrumb">
+            @if (isAdminView)
+            {
+                <li class="breadcrumb-item"><a href="/Admin/Dashboard">Dashboard</a></li>
+            }
+            else
+            {
+                <li class="breadcrumb-item active">Profile</li>
+            }
+            @if (isAdminView)
+            {
+                <li class="breadcrumb-item active">Profile</li>
+            }
+        </ol>
     </div>
-    <button class="btn btn-outline-primary" id="editProfileBtn"><i class="bi bi-pencil"></i> Edit Profile</button>
+    @if (isAdminView)
+    {
+        <a href="/Admin/Dashboard" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+    }
 </div>
 <div class="row g-3">
     <div class="col-md-4">
@@ -19,25 +41,34 @@
             <div class="profile-header">
                 <div class="profile-avatar" id="profileInitial">@userInit</div>
                 <div>
-                    <div class="profile-name" id="profileName">@userName</div>
+                    <div class="profile-name" id="profileName">@(isAdminView ? "Loading…" : userName)</div>
                     <div class="profile-role" id="profileYearProg">Student</div>
                 </div>
             </div>
             <div class="card-body">
-                <div class="info-row"><i class="bi bi-envelope-fill"></i> <span id="profileEmail">@userEmail</span></div>
+                <div class="info-row"><i class="bi bi-envelope-fill"></i> <span id="profileEmail">@(isAdminView ? "—" : userEmail)</span></div>
                 <div class="info-row"><i class="bi bi-telephone-fill"></i> <span id="profilePhone">—</span></div>
                 <div class="info-row"><i class="bi bi-geo-alt-fill"></i> <span id="profileAddress">—</span></div>
                 <div class="info-row"><i class="bi bi-gender-ambiguous"></i> <span id="profileGender">—</span></div>
                 <div class="info-row"><i class="bi bi-calendar-fill"></i> <span id="profileBirth">—</span></div>
+                <div class="info-row"><i class="bi bi-mortarboard-fill"></i> <span id="profileProgram">—</span></div>
+                <div class="info-row"><i class="bi bi-building"></i> <span id="profileDept">—</span></div>
+                <div class="info-row"><i class="bi bi-layers-fill"></i> Year: <span id="profileYear">—</span></div>
                 <hr />
-                <a href="/Student/Courses" class="btn btn-primary w-100 mb-2"><i class="bi bi-journal-bookmark-fill"></i> My Courses</a>
-                <a href="/Login/Logout" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                @if (isAdminView)
+                {
+                    <button class="btn btn-primary w-100" id="editProfileBtn"><i class="bi bi-pencil"></i> Edit Profile</button>
+                }
+                else
+                {
+                    <a href="/Login/Logout" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                }
             </div>
         </div>
     </div>
     <div class="col-md-8">
         <div class="card mb-3">
-            <div class="card-header"><div class="card-header-title"><i class="bi bi-bar-chart"></i> My Attendance Summary</div></div>
+            <div class="card-header"><div class="card-header-title"><i class="bi bi-bar-chart"></i> @(isAdminView ? "Attendance Summary" : "My Attendance Summary")</div></div>
             <div class="card-body">
                 <div class="row text-center g-3">
                     <div class="col-4"><div style="background:#DCFCE7;border-radius:10px;padding:16px;"><div class="attend-big-num num-present" id="sumPresent">—</div><small class="text-muted">Present</small></div></div>
@@ -53,16 +84,18 @@
     </div>
 </div>
 
-<!-- Edit Profile Modal -->
+<!-- Edit Student Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit Profile</h5>
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit Student Profile</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editProfileUserId">
+                <input type="hidden" id="editStudentId">
+                <h6 class="text-muted mb-3"><i class="bi bi-person-fill"></i> User Account</h6>
                 <div class="row g-2">
                     <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" class="form-control" id="epFullName"></div>
                     <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" id="epEmail"></div>
@@ -73,6 +106,27 @@
                     </div>
                     <div class="col-md-6"><label class="form-label">Birth Date</label><input type="date" class="form-control" id="epBirthDate"></div>
                     <div class="col-md-6"><label class="form-label">Address</label><input type="text" class="form-control" id="epAddress"></div>
+                </div>
+                <hr>
+                <h6 class="text-muted mb-3"><i class="bi bi-mortarboard"></i> Student Info</h6>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label">Program</label>
+                        <select class="form-select" id="epProgramId"><option value="">Loading…</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="epDeptId"><option value="">Loading…</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Year Level</label>
+                        <select class="form-select" id="epYearLevel">
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -85,26 +139,63 @@
 
 @section Scripts {
     <script>
-        var currentUserId = '@userId';
+        var currentUserId = '@resolvedUserId';
+        var isAdminView = document.getElementById('isAdminViewFlag').value === '1';
+        var studentRecord = null;
+
+        function loadDropdowns(selProg, selDept) {
+            $.ajax({ url: '/AttendanceManagement/Program', dataType: 'json',
+                success: function(p) {
+                    var o = '<option value="">Select Program</option>';
+                    (Array.isArray(p) ? p : []).forEach(function(x) {
+                        var n = x.name || x.program_Name || x.title || 'Program ' + x.id;
+                        o += '<option value="' + x.id + '"' + (x.id == selProg ? ' selected' : '') + '>' + n + '</option>';
+                    });
+                    $('#epProgramId').html(o);
+                }
+            });
+            $.ajax({ url: '/AttendanceManagement/Department', dataType: 'json',
+                success: function(d) {
+                    var o = '<option value="">Select Department</option>';
+                    (Array.isArray(d) ? d : []).forEach(function(x) {
+                        var n = x.name || x.department_Name || 'Dept ' + x.id;
+                        o += '<option value="' + x.id + '"' + (x.id == selDept ? ' selected' : '') + '>' + n + '</option>';
+                    });
+                    $('#epDeptId').html(o);
+                }
+            });
+        }
 
         function loadProfile() {
             if (!currentUserId) return;
             $.ajax({ url: '/api/User/' + currentUserId, dataType: 'json',
                 success: function(u) {
-                    $('#profileName').text(u.full_Name||'—');
-                    $('#profileInitial').text((u.full_Name||'S')[0].toUpperCase());
-                    $('#profileEmail').text(u.email||'—');
-                    $('#profilePhone').text(u.phone_Number||'—');
-                    $('#profileAddress').text(u.address||'—');
-                    $('#profileGender').text(u.gender==='M'?'Male':u.gender==='F'?'Female':(u.gender||'—'));
+                    $('#profileName').text(u.full_Name || '—');
+                    $('#profileInitial').text((u.full_Name || 'S')[0].toUpperCase());
+                    $('#profileEmail').text(u.email || '—');
+                    $('#profilePhone').text(u.phone_Number || '—');
+                    $('#profileAddress').text(u.address || '—');
+                    $('#profileGender').text(u.gender === 'M' ? 'Male' : u.gender === 'F' ? 'Female' : (u.gender || '—'));
                     $('#profileBirth').text(u.birth_Date ? new Date(u.birth_Date).toLocaleDateString() : '—');
                 }
             });
-            // Load student-specific info
-            $.ajax({ url: '/api/Student', dataType: 'json',
-                success: function(arr) {
-                    var s = (Array.isArray(arr)?arr:[]).find(function(x){ return (x.user_ID||x.userId)==currentUserId; });
-                    if (s) $('#profileYearProg').text((s.year_Level||'')+(s.program_ID?' — Program #'+s.program_ID:''));
+            $.when(
+                $.ajax({ url: '/api/Student', dataType: 'json' }),
+                $.ajax({ url: '/AttendanceManagement/Program', dataType: 'json' }),
+                $.ajax({ url: '/AttendanceManagement/Department', dataType: 'json' })
+            ).done(function(sRes, pRes, dRes) {
+                var students = Array.isArray(sRes[0]) ? sRes[0] : [];
+                var programs = Array.isArray(pRes[0]) ? pRes[0] : [];
+                var depts    = Array.isArray(dRes[0]) ? dRes[0] : [];
+                var s = students.find(function(x) { return String(x.user_ID || x.userId) === String(currentUserId); });
+                if (s) {
+                    studentRecord = s;
+                    var p = programs.find(function(x) { return String(x.id) === String(s.program_ID); });
+                    var d = depts.find(function(x) { return String(x.id) === String(s.department_ID); });
+                    $('#profileYearProg').text(s.year_Level || 'Student');
+                    $('#profileProgram').text(p ? (p.name || p.program_Name || '—') : (s.program_ID ? 'Program #' + s.program_ID : '—'));
+                    $('#profileDept').text(d ? (d.name || d.department_Name || '—') : (s.department_ID ? 'Dept #' + s.department_ID : '—'));
+                    $('#profileYear').text(s.year_Level || '—');
                 }
             });
         }
@@ -112,65 +203,85 @@
         function loadMyAttendance() {
             $.ajax({ url: '/AttendanceManagement/Enrollment', dataType: 'json',
                 success: function(enrollments) {
-                    var myEnrollments = (Array.isArray(enrollments)?enrollments:[]).filter(function(e){ return e.student_ID == currentUserId; });
-                    var myEids = myEnrollments.map(function(e){ return e.enrollment_ID||e.id; });
+                    var myE = (Array.isArray(enrollments) ? enrollments : []).filter(function(e) { return String(e.student_ID) === String(currentUserId); });
+                    var eids = myE.map(function(e) { return e.enrollment_ID || e.id; });
                     $.ajax({ url: '/AttendanceManagement/Attendance', dataType: 'json',
                         success: function(attData) {
-                            var arr = (Array.isArray(attData)?attData:[]).filter(function(a){ return myEids.includes(a.enrollment_ID); });
-                            $('#sumPresent').text(arr.filter(a=>(a.status||'').toLowerCase()==='present').length);
-                            $('#sumAbsent').text(arr.filter(a=>(a.status||'').toLowerCase()==='absent').length);
-                            $('#sumLate').text(arr.filter(a=>(a.status||'').toLowerCase()==='late').length);
+                            var arr = (Array.isArray(attData) ? attData : []).filter(function(a) { return eids.includes(a.enrollment_ID); });
+                            $('#sumPresent').text(arr.filter(a => (a.status || '').toLowerCase() === 'present').length);
+                            $('#sumAbsent').text(arr.filter(a => (a.status || '').toLowerCase() === 'absent').length);
+                            $('#sumLate').text(arr.filter(a => (a.status || '').toLowerCase() === 'late').length);
                             var records = {};
-                            arr.forEach(function(a){ var d=(a.date||a.attendanceDate||'').substring(0,10); if(d) records[d]=(a.status||'').toLowerCase(); });
+                            arr.forEach(function(a) { var d = (a.date || a.attendanceDate || '').substring(0, 10); if (d) records[d] = (a.status || '').toLowerCase(); });
                             renderMiniCalendar('miniCalendar', new Date().getFullYear(), new Date().getMonth(), records);
                         },
-                        error: function(){ renderMiniCalendar('miniCalendar'); }
+                        error: function() { renderMiniCalendar('miniCalendar'); }
                     });
                 },
-                error: function(){ renderMiniCalendar('miniCalendar'); }
+                error: function() { renderMiniCalendar('miniCalendar'); }
             });
         }
 
-        $(function(){
+        $(function() {
             loadProfile();
             loadMyAttendance();
 
-            $('#editProfileBtn').click(function(){
-                $.ajax({ url: '/api/User/'+currentUserId, dataType:'json',
-                    success: function(u){
-                        $('#editProfileUserId').val(u.user_ID);
-                        $('#epFullName').val(u.full_Name||'');
-                        $('#epEmail').val(u.email||'');
-                        $('#epPhone').val(u.phone_Number||'');
-                        $('#epGender').val(u.gender||'M');
-                        $('#epBirthDate').val((u.birth_Date||'').substring(0,10));
-                        $('#epAddress').val(u.address||'');
-                        $('#editProfileModal').modal('show');
-                    }
+            if (isAdminView) {
+                $('#editProfileBtn').click(function() {
+                    $.ajax({ url: '/api/User/' + currentUserId, dataType: 'json',
+                        success: function(u) {
+                            $('#editProfileUserId').val(u.user_ID);
+                            $('#editStudentId').val(studentRecord ? (studentRecord.student_ID || studentRecord.id || '') : '');
+                            $('#epFullName').val(u.full_Name || '');
+                            $('#epEmail').val(u.email || '');
+                            $('#epPhone').val(u.phone_Number || '');
+                            $('#epGender').val(u.gender || 'M');
+                            $('#epBirthDate').val((u.birth_Date || '').substring(0, 10));
+                            $('#epAddress').val(u.address || '');
+                            $('#epYearLevel').val(studentRecord ? (studentRecord.year_Level || '1st Year') : '1st Year');
+                            loadDropdowns(studentRecord ? studentRecord.program_ID : null, studentRecord ? studentRecord.department_ID : null);
+                            $('#editProfileModal').modal('show');
+                        }
+                    });
                 });
-            });
 
-            $('#saveProfileBtn').click(function(){
-                var uid=$('#editProfileUserId').val();
-                if(!$('#epFullName').val().trim()){ showToast('Full name is required.','warning'); return; }
-                $.ajax({ type:'PUT', url:'/api/User/'+uid, contentType:'application/json',
-                    data: JSON.stringify({
-                        user_ID:parseInt(uid), full_Name:$('#epFullName').val().trim(),
-                        email:$('#epEmail').val().trim(), phone_Number:$('#epPhone').val().trim(),
-                        gender:$('#epGender').val(),
-                        birth_Date:$('#epBirthDate').val()||new Date().toISOString(),
-                        address:$('#epAddress').val().trim(), userGroup_ID:0, lastUpdatedBy:'student'
-                    }),
-                    beforeSend: function(){ $('#page-loader').fadeIn(150); },
-                    success: function(){
-                        $('#page-loader').fadeOut(200);
-                        showToast('Profile updated successfully.','success');
-                        $('#editProfileModal').modal('hide');
-                        loadProfile();
-                    },
-                    error: function(){ $('#page-loader').fadeOut(200); showToast('Update failed.','error'); }
+                $('#saveProfileBtn').click(function() {
+                    var uid = $('#editProfileUserId').val();
+                    var sid = $('#editStudentId').val();
+                    if (!$('#epFullName').val().trim()) { showToast('Full name is required.', 'warning'); return; }
+                    $('#page-loader').fadeIn(150);
+                    $.ajax({ type: 'PUT', url: '/api/User/' + uid, contentType: 'application/json',
+                        data: JSON.stringify({
+                            user_ID: parseInt(uid),
+                            full_Name: $('#epFullName').val().trim(),
+                            email: $('#epEmail').val().trim(),
+                            phone_Number: $('#epPhone').val().trim(),
+                            gender: $('#epGender').val(),
+                            birth_Date: $('#epBirthDate').val() || new Date().toISOString(),
+                            address: $('#epAddress').val().trim(),
+                            userGroup_ID: 3,
+                            lastUpdatedBy: 'admin'
+                        }),
+                        success: function() {
+                            $.ajax({ type: 'PUT', url: '/api/Student/' + sid, contentType: 'application/json',
+                                data: JSON.stringify({
+                                    program_ID: parseInt($('#epProgramId').val()) || 0,
+                                    department_ID: parseInt($('#epDeptId').val()) || 0,
+                                    year_Level: $('#epYearLevel').val(),
+                                    lastUpdatedBy: 'admin'
+                                }),
+                                complete: function() {
+                                    $('#page-loader').fadeOut(200);
+                                    showToast('Profile updated successfully.', 'success');
+                                    $('#editProfileModal').modal('hide');
+                                    loadProfile();
+                                }
+                            });
+                        },
+                        error: function() { $('#page-loader').fadeOut(200); showToast('Update failed.', 'error'); }
+                    });
                 });
-            });
+            }
         });
     </script>
 }

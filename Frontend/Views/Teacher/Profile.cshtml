@@ -1,17 +1,39 @@
 ﻿@{
     Layout = "_Layout";
     ViewData["Title"] = "Teacher Profile";
+    var isAdminView = ViewData["IsAdminView"] as bool? ?? false;
+    var targetUserId = ViewData["TargetUserId"]?.ToString() ?? "";
+    var sessionUserId = Context.Session.GetString("UserId") ?? "";
+    var resolvedUserId = isAdminView && !string.IsNullOrEmpty(targetUserId) ? targetUserId : sessionUserId;
     var userName = Context.Session.GetString("UserName") ?? "Teacher";
     var userEmail = Context.Session.GetString("UserEmail") ?? "";
-    var userId = Context.Session.GetString("UserId") ?? "";
-    var userInit = userName.Length > 0 ? userName[0].ToString().ToUpper() : "T";
+    var userInit = isAdminView ? "T" : (userName.Length > 0 ? userName[0].ToString().ToUpper() : "T");
 }
+
+<input type="hidden" id="isAdminViewFlag" value="@(isAdminView ? "1" : "0")" />
+
 <div class="page-header">
     <div>
-        <h4><i class="bi bi-person-circle"></i> My Profile</h4>
-        <ol class="breadcrumb"><li class="breadcrumb-item"><a href="/Teacher/Dashboard">Dashboard</a></li><li class="breadcrumb-item active">Profile</li></ol>
+        <h4><i class="bi bi-person-circle"></i> @(isAdminView ? "Teacher Profile (Admin View)" : "My Profile")</h4>
+        <ol class="breadcrumb">
+            @if (isAdminView)
+            {
+                <li class="breadcrumb-item"><a href="/Admin/Dashboard">Dashboard</a></li>
+            }
+            else
+            {
+                <li class="breadcrumb-item"><a href="/Teacher/Dashboard">Dashboard</a></li>
+            }
+            <li class="breadcrumb-item active">Profile</li>
+        </ol>
     </div>
-    <button class="btn btn-outline-primary" id="editProfileBtn"><i class="bi bi-pencil"></i> Edit Profile</button>
+    <div class="d-flex gap-2">
+        @if (isAdminView)
+        {
+            <a href="/Admin/Dashboard" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+        }
+        <button class="btn btn-outline-primary" id="editProfileBtn"><i class="bi bi-pencil"></i> Edit Profile</button>
+    </div>
 </div>
 <div class="row g-3">
     <div class="col-md-4">
@@ -19,17 +41,22 @@
             <div class="profile-header">
                 <div class="profile-avatar" id="profileInitial">@userInit</div>
                 <div>
-                    <div class="profile-name" id="profileName">@userName</div>
+                    <div class="profile-name" id="profileName">@(isAdminView ? "Loading…" : userName)</div>
                     <div class="profile-role" id="profileDept">Teacher</div>
                 </div>
             </div>
             <div class="card-body">
-                <div class="info-row"><i class="bi bi-envelope-fill"></i> <span id="profileEmail">@userEmail</span></div>
+                <div class="info-row"><i class="bi bi-envelope-fill"></i> <span id="profileEmail">@(isAdminView ? "—" : userEmail)</span></div>
                 <div class="info-row"><i class="bi bi-telephone-fill"></i> <span id="profilePhone">—</span></div>
                 <div class="info-row"><i class="bi bi-geo-alt-fill"></i> <span id="profileAddress">—</span></div>
                 <div class="info-row"><i class="bi bi-gender-ambiguous"></i> <span id="profileGender">—</span></div>
+                <div class="info-row"><i class="bi bi-calendar-fill"></i> <span id="profileBirth">—</span></div>
+                <div class="info-row"><i class="bi bi-building"></i> <span id="profileDeptInfo">—</span></div>
                 <hr />
-                <a href="/Login/Logout" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                @if (!isAdminView)
+                {
+                    <a href="/Login/Logout" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                }
             </div>
         </div>
     </div>
@@ -51,7 +78,6 @@
     </div>
 </div>
 
-<!-- Edit Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -61,6 +87,7 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editProfileUserId">
+                <input type="hidden" id="editTeacherId">
                 <div class="row g-2">
                     <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" class="form-control" id="epFullName"></div>
                     <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" id="epEmail"></div>
@@ -71,6 +98,7 @@
                     </div>
                     <div class="col-md-6"><label class="form-label">Birth Date</label><input type="date" class="form-control" id="epBirthDate"></div>
                     <div class="col-md-6"><label class="form-label">Address</label><input type="text" class="form-control" id="epAddress"></div>
+                    <div class="col-md-12"><label class="form-label">Department</label><input type="text" class="form-control" id="epDepartment" placeholder="e.g. College of Computing Studies"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -83,72 +111,114 @@
 
 @section Scripts {
     <script>
-        var currentUserId = '@userId';
+        var currentUserId = '@resolvedUserId';
+        var isAdminView = document.getElementById('isAdminViewFlag').value === '1';
+        var teacherRecord = null;
 
         function loadProfile() {
             if (!currentUserId) return;
-            $.ajax({ url:'/api/User/'+currentUserId, dataType:'json',
-                success: function(u){
-                    $('#profileName').text(u.full_Name||'—');
-                    $('#profileInitial').text((u.full_Name||'T')[0].toUpperCase());
-                    $('#profileEmail').text(u.email||'—');
-                    $('#profilePhone').text(u.phone_Number||'—');
-                    $('#profileAddress').text(u.address||'—');
-                    $('#profileGender').text(u.gender==='M'?'Male':u.gender==='F'?'Female':(u.gender||'—'));
+            $.ajax({ url: '/api/User/' + currentUserId, dataType: 'json',
+                success: function(u) {
+                    $('#profileName').text(u.full_Name || '—');
+                    $('#profileInitial').text((u.full_Name || 'T')[0].toUpperCase());
+                    $('#profileEmail').text(u.email || '—');
+                    $('#profilePhone').text(u.phone_Number || '—');
+                    $('#profileAddress').text(u.address || '—');
+                    $('#profileGender').text(u.gender === 'M' ? 'Male' : u.gender === 'F' ? 'Female' : (u.gender || '—'));
+                    $('#profileBirth').text(u.birth_Date ? new Date(u.birth_Date).toLocaleDateString() : '—');
                 }
             });
-            $.ajax({ url:'/api/Teacher', dataType:'json',
-                success: function(teachers){
-                    var t=(Array.isArray(teachers)?teachers:[]).find(function(x){ return (x.user_ID||x.userId)==currentUserId; });
-                    if(t && t.department) $('#profileDept').text('Teacher — '+t.department);
+            $.ajax({ url: '/api/Teacher', dataType: 'json',
+                success: function(teachers) {
+                    var t = (Array.isArray(teachers) ? teachers : []).find(function(x) {
+                        return String(x.user_ID || x.userId) === String(currentUserId);
+                    });
+                    if (t) {
+                        teacherRecord = t;
+                        $('#profileDept').text('Teacher — ' + (t.department || '—'));
+                        $('#profileDeptInfo').text(t.department || '—');
+                    }
                 }
             });
         }
 
-        function loadAttendanceSummary(){
-            var today=new Date().toISOString().slice(0,10);
-            $.ajax({ url:'/AttendanceManagement/Attendance', dataType:'json',
-                success: function(data){
-                    var arr=Array.isArray(data)?data:[];
-                    var todayArr=arr.filter(function(a){ return (a.date||a.attendanceDate||'').substring(0,10)===today; });
-                    $('#sumPresent').text(todayArr.filter(a=>(a.status||'').toLowerCase()==='present').length);
-                    $('#sumAbsent').text(todayArr.filter(a=>(a.status||'').toLowerCase()==='absent').length);
-                    $('#sumLate').text(todayArr.filter(a=>(a.status||'').toLowerCase()==='late').length);
-                    var records={};
-                    arr.forEach(function(a){ var d=(a.date||a.attendanceDate||'').substring(0,10); if(d) records[d]=(a.status||'').toLowerCase(); });
+        function loadAttendanceSummary() {
+            var today = new Date().toISOString().slice(0, 10);
+            $.ajax({ url: '/AttendanceManagement/Attendance', dataType: 'json',
+                success: function(data) {
+                    var arr = Array.isArray(data) ? data : [];
+                    var todayArr = arr.filter(function(a) { return (a.date || a.attendanceDate || '').substring(0, 10) === today; });
+                    $('#sumPresent').text(todayArr.filter(a => (a.status || '').toLowerCase() === 'present').length);
+                    $('#sumAbsent').text(todayArr.filter(a => (a.status || '').toLowerCase() === 'absent').length);
+                    $('#sumLate').text(todayArr.filter(a => (a.status || '').toLowerCase() === 'late').length);
+                    var records = {};
+                    arr.forEach(function(a) { var d = (a.date || a.attendanceDate || '').substring(0, 10); if (d) records[d] = (a.status || '').toLowerCase(); });
                     renderMiniCalendar('miniCalendar', new Date().getFullYear(), new Date().getMonth(), records);
                 },
-                error: function(){ renderMiniCalendar('miniCalendar'); }
+                error: function() { renderMiniCalendar('miniCalendar'); }
             });
         }
 
-        $(function(){
+        $(function() {
             loadProfile();
             loadAttendanceSummary();
 
-            $('#editProfileBtn').click(function(){
-                $.ajax({ url:'/api/User/'+currentUserId, dataType:'json',
-                    success: function(u){
+            $('#editProfileBtn').click(function() {
+                $.ajax({ url: '/api/User/' + currentUserId, dataType: 'json',
+                    success: function(u) {
                         $('#editProfileUserId').val(u.user_ID);
-                        $('#epFullName').val(u.full_Name||'');
-                        $('#epEmail').val(u.email||'');
-                        $('#epPhone').val(u.phone_Number||'');
-                        $('#epGender').val(u.gender||'M');
-                        $('#epBirthDate').val((u.birth_Date||'').substring(0,10));
-                        $('#epAddress').val(u.address||'');
+                        $('#editTeacherId').val(teacherRecord ? (teacherRecord.teacher_ID || teacherRecord.id || '') : '');
+                        $('#epFullName').val(u.full_Name || '');
+                        $('#epEmail').val(u.email || '');
+                        $('#epPhone').val(u.phone_Number || '');
+                        $('#epGender').val(u.gender || 'M');
+                        $('#epBirthDate').val((u.birth_Date || '').substring(0, 10));
+                        $('#epAddress').val(u.address || '');
+                        $('#epDepartment').val(teacherRecord ? (teacherRecord.department || '') : '');
                         $('#editProfileModal').modal('show');
                     }
                 });
             });
 
-            $('#saveProfileBtn').click(function(){
-                var uid=$('#editProfileUserId').val();
-                if(!$('#epFullName').val().trim()){ showToast('Full name is required.','warning'); return; }
-                $.ajax({ type:'PUT', url:'/api/User/'+uid, contentType:'application/json',
-                    data: JSON.stringify({ user_ID:parseInt(uid), full_Name:$('#epFullName').val().trim(), email:$('#epEmail').val().trim(), phone_Number:$('#epPhone').val().trim(), gender:$('#epGender').val(), birth_Date:$('#epBirthDate').val()||new Date().toISOString(), address:$('#epAddress').val().trim(), userGroup_ID:0, lastUpdatedBy:'teacher' }),
-                    beforeSend: function(){ $('#page-loader').fadeIn(150); },
-                    success: function(){ $('#page-loader').fadeOut(200); showToast('Profile updated successfully.','success'); $('#editProfileModal').modal('hide'); loadProfile(); },
-                    error: function(){ $('#page-loader').fadeOut(200); showToast('Update failed.','error'); }
+            $('#saveProfileBtn').click(function() {
+                var uid = $('#editProfileUserId').val();
+                if (!$('#epFullName').val().trim()) { showToast('Full name is required.', 'warning'); return; }
+                var updatedBy = isAdminView ? 'admin' : 'teacher';
+                $.ajax({ type: 'PUT', url: '/api/User/' + uid, contentType: 'application/json',
+                    data: JSON.stringify({
+                        user_ID: parseInt(uid),
+                        full_Name: $('#epFullName').val().trim(),
+                        email: $('#epEmail').val().trim(),
+                        phone_Number: $('#epPhone').val().trim(),
+                        gender: $('#epGender').val(),
+                        birth_Date: $('#epBirthDate').val() || new Date().toISOString(),
+                        address: $('#epAddress').val().trim(),
+                        userGroup_ID: 2,
+                        lastUpdatedBy: updatedBy
+                    }),
+                    beforeSend: function() { $('#page-loader').fadeIn(150); },
+                    success: function() {
+                        var dept = $('#epDepartment').val().trim();
+                        if (teacherRecord && dept) {
+                            var tid = teacherRecord.teacher_ID || teacherRecord.id;
+                            $.ajax({
+                                type: 'PUT', url: '/api/Teacher/' + tid, contentType: 'application/json',
+                                data: JSON.stringify({ teacher_ID: parseInt(tid), user_ID: parseInt(uid), department: dept, lastUpdatedBy: updatedBy }),
+                                complete: function() {
+                                    $('#page-loader').fadeOut(200);
+                                    showToast('Profile updated successfully.', 'success');
+                                    $('#editProfileModal').modal('hide');
+                                    loadProfile();
+                                }
+                            });
+                        } else {
+                            $('#page-loader').fadeOut(200);
+                            showToast('Profile updated successfully.', 'success');
+                            $('#editProfileModal').modal('hide');
+                            loadProfile();
+                        }
+                    },
+                    error: function() { $('#page-loader').fadeOut(200); showToast('Update failed.', 'error'); }
                 });
             });
         });
