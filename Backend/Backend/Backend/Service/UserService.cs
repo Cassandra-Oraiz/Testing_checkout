@@ -36,7 +36,6 @@ namespace Backend.Backend.Service
                 Sex = u.Sex,
                 Birth_Date = u.Birth_Date,
                 Address = u.Address,
-                UserGroup_ID = u.UserGroup_ID,
             });
 
             return new ResponseDTO<IEnumerable<GetUserDTO>>
@@ -65,7 +64,6 @@ namespace Backend.Backend.Service
                 Sex = u.Sex,
                 Birth_Date = u.Birth_Date,
                 Address = u.Address,
-                UserGroup_ID = u.UserGroup_ID,
             };
 
             return new ResponseDTO<GetUserDTO>
@@ -97,7 +95,7 @@ namespace Backend.Backend.Service
             {
                 return new ResponseDTO<GetUserDTO>
                 { 
-                    Status_code = 403, //403 access_denied: You are not authorized to use the specific service with that account.
+                    Status_code = 403, //403 rolepermission_denied: You are not authorized to use the specific service with that account.
                     Data = null
                 };
             }
@@ -118,7 +116,6 @@ namespace Backend.Backend.Service
                 Sex = userDto.Sex,
                 Birth_Date = userDto.Birth_Date,
                 Address = userDto.Address,
-                UserGroup_ID = userDto.UserGroup_ID,
                 CreatedAt = DateTime.UtcNow,
                 LastUpdatedAt = DateTime.UtcNow,
                 CreatedBy = "Admin",
@@ -136,7 +133,6 @@ namespace Backend.Backend.Service
                 Sex = user.Sex,
                 Birth_Date = user.Birth_Date,
                 Address = user.Address,
-                UserGroup_ID = user.UserGroup_ID
             };
 
             return new ResponseDTO<GetUserDTO>

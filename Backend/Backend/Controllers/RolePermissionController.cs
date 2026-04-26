@@ -5,25 +5,25 @@ using Backend.Backend.Interface.ServiceInterface;
 namespace Backend.Backend.Controllers
 {
     /// <summary>
-    /// Handles all operations related to Access management.
+    /// Handles all operations related to RolePermission management.
     /// </summary>
     [Route("AttendanceManagement/[controller]")]
     [ApiController]
-    public class AccessController : ControllerBase
+    public class RolePermissionController : ControllerBase
     {
-        private readonly IAccessService _accessService;
+        private readonly IRolePermissionService _rolepermissionService;
 
-        public AccessController(IAccessService accessService)
+        public RolePermissionController(IRolePermissionService rolepermissionService)
         {
-            _accessService = accessService;
+            _rolepermissionService = rolepermissionService;
         }
 
         /// <summary>
-        /// Retrieve all access records
+        /// Retrieve all Role Permissions records
         /// </summary>
         /// <remarks>
         /// <para><b>Description:</b></para>
-        /// <para>Fetches all access records stored in the system.</para>
+        /// <para>Fetches all Role Permissions records stored in the system.</para>
         ///
         /// <para><b>Inputs:</b></para>
         /// <list type="bullet">
@@ -32,26 +32,26 @@ namespace Backend.Backend.Controllers
         ///
         /// <para><b>Behavior:</b></para>
         /// <list type="bullet">
-        ///     <item><description>Returns all access records</description></item>
+        ///     <item><description>Returns all Role Permissions records</description></item>
         ///     <item><description>Returns 404 if no records exist</description></item>
         /// </list>
         ///
         /// <para><b>Example:</b></para>
         /// <code>
-        /// GET /AttendanceManagement/Access
+        /// GET /AttendanceManagement/RolePermission
         /// </code>
         /// </remarks>
-        /// <returns>List of access records</returns>
+        /// <returns>List of Role Permissions records</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAccesses()
         {
             try { 
 
-                var accesses = await _accessService.GetAllAsync();
-                if (!(accesses?.Data?.Any() ?? false))
+                var rolepermission = await _rolepermissionService.GetAllAsync();
+                if (!(rolepermission?.Data?.Any() ?? false))
                     return NotFound("No Access Records Found");
 
-                return Ok(accesses);
+                return Ok(rolepermission);
             }
             catch (Exception x)
             {
@@ -61,39 +61,39 @@ namespace Backend.Backend.Controllers
         }
 
         /// <summary>
-        /// Retrieve an access record by ID
+        /// Retrieve an Role Permissions record by ID
         /// </summary>
         /// <remarks>
         /// <para><b>Description:</b></para>
-        /// <para>Fetches a specific access record using its unique identifier.</para>
+        /// <para>Fetches a specific Role Permissions record using its unique identifier.</para>
         ///
         /// <para><b>Inputs:</b></para>
         /// <list type="bullet">
-        ///     <item><description><b>id</b> - Unique ID of the access record</description></item>
+        ///     <item><description><b>id</b> - Unique ID of the Role Permissions record</description></item>
         /// </list>  
         ///
         /// <para><b>Behavior:</b></para>
         /// <list type="bullet">
-        ///     <item><description>Returns the access record if found</description></item>
+        ///     <item><description>Returns the Role Permissions record if found</description></item>
         ///     <item><description>Returns 404 if the record does not exist</description></item>
         /// </list>
         ///
         /// <para><b>Example:</b></para>
         /// <code>
-        /// GET /AttendanceManagement/Access/1
+        /// GET /AttendanceManagement/RolePermission/1
         /// </code>
         /// </remarks>
-        /// <param name="id">Access ID</param>
-        /// <returns>Access record</returns>
+        /// <param name="id">RolePermission ID</param>
+        /// <returns>RolePermission record</returns>
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetAccessById(int id)
+        public async Task<IActionResult> GetRolePermissionById(int id)
         {
             try { 
-                var access = await _accessService.GetByIdAsync(id);
-                if (access == null)
-                    return NotFound($"#404! Access with ID {id} not found");
+                var rolepermission = await _rolepermissionService.GetByIdAsync(id);
+                if (rolepermission == null)
+                    return NotFound($"#404! RolePermission with ID {id} not found");
 
-                return Ok(access);
+                return Ok(rolepermission);
             }
             catch (Exception x)
             {
@@ -103,41 +103,41 @@ namespace Backend.Backend.Controllers
         }
 
         /// <summary>
-        /// Create a new access record
+        /// Create a new Role Permissions record
         /// </summary>
         /// <remarks>
         /// <para><b>Description:</b></para>
-        /// <para>Creates a new access entry in the system.</para>
+        /// <para>Creates a new Role Permissions entry in the system.</para>
         ///
         /// <para><b>Inputs:</b></para>
         /// <list type="bullet">
-        ///     <item><description><b>Name</b> - Name of the access</description></item>
+        ///     <item><description><b>Name</b> - Name of the Role Permissions</description></item>
         ///     <item><description><b>Description</b> - Optional description</description></item>
         /// </list>
         ///
         /// <para><b>Behavior:</b></para>
         /// <list type="bullet">
-        ///     <item><description>Creates a new access record</description></item>
+        ///     <item><description>Creates a new Role Permissions record</description></item>
         /// </list>
         ///
         /// <para><b>Example:</b></para>
         /// <code>
-        /// POST /AttendanceManagement/Access
+        /// POST /AttendanceManagement/RolePermission
         /// {
         ///   "name": "Read",
-        ///   "description": "Read-only access"
+        ///   "description": "Read-only Role Permissions"
         /// }
         /// </code>
         /// </remarks>
-        /// <param name="dto">Access data</param>
-        /// <returns>Created access record</returns>
+        /// <param name="dto">RolePermission data</param>
+        /// <returns>Created Role Permissions record</returns>
         [HttpPost]
-        public async Task<IActionResult> AddAccess(AddAccessDTO dto)
+        public async Task<IActionResult> AddRolePermission(AddRolePermissionDTO dto)
         {
             try { 
 
-                var access = await _accessService.AddAsync(dto);
-                return Ok(access);
+                var rolepermissions = await _rolepermissionService.AddAsync(dto);
+                return Ok(rolepermissions);
             }
             catch (Exception x)
             {
@@ -147,15 +147,15 @@ namespace Backend.Backend.Controllers
         }
 
         /// <summary>
-        /// Update an existing access record
+        /// Update an existing Role Permissions record
         /// </summary>
         /// <remarks>
         /// <para><b>Description:</b></para>
-        /// <para>Updates an existing access record using its ID.</para>
+        /// <para>Updates an existing Role Permissions record using its ID.</para>
         ///
         /// <para><b>Inputs:</b></para>
         /// <list type="bullet">
-        ///     <item><description><b>id</b> - Access ID</description></item>
+        ///     <item><description><b>id</b> - RolePermission ID</description></item>
         ///     <item><description><b>Name</b> - Updated name</description></item>
         ///     <item><description><b>Description</b> - Updated description</description></item>
         /// </list>
@@ -166,18 +166,18 @@ namespace Backend.Backend.Controllers
         ///     <item><description>Returns 404 if not found</description></item>
         /// </list>
         /// </remarks>
-        /// <param name="id">Access ID</param>
-        /// <param name="dto">Updated access data</param>
-        /// <returns>Updated access record</returns>
+        /// <param name="id">RolePermission ID</param>
+        /// <param name="dto">Updated Role Permissions data</param>
+        /// <returns>Updated Role Permissions record</returns>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateAccess(int id, AddAccessDTO dto)
+        public async Task<IActionResult> UpdateRolePermission(int id, AddRolePermissionDTO dto)
         {
             try { 
-                var updatedAccess = await _accessService.UpdateAsync(id, dto);
-                if (updatedAccess == null)
-                    return NotFound($"#404! Access with ID {id} not found");
+                var updatedRolePermission = await _rolepermissionService.UpdateAsync(id, dto);
+                if (updatedRolePermission == null)
+                    return NotFound($"#404! RolePermission with ID {id} not found");
 
-                return Ok(updatedAccess);
+                return Ok(updatedRolePermission);
             }
             catch (Exception x)
             {
@@ -187,15 +187,15 @@ namespace Backend.Backend.Controllers
         }
 
         /// <summary>
-        /// Delete an access record
+        /// Delete an Role Permissions record
         /// </summary>
         /// <remarks>
         /// <para><b>Description:</b></para>
-        /// <para>Deletes an access record from the system.</para>
+        /// <para>Deletes an Role Permissions record from the system.</para>
         ///
         /// <para><b>Inputs:</b></para>
         /// <list type="bullet">
-        ///     <item><description><b>id</b> - Access ID to delete</description></item>
+        ///     <item><description><b>id</b> - RolePermission ID to delete</description></item>
         /// </list>
         ///
         /// <para><b>Behavior:</b></para>
@@ -204,18 +204,18 @@ namespace Backend.Backend.Controllers
         ///     <item><description>Returns 404 if not found</description></item>
         /// </list>
         /// </remarks>
-        /// <param name="id">Access ID</param>
+        /// <param name="id">RolePermission ID</param>
         /// <returns>Status message</returns>
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteAccess(int id)
+        public async Task<IActionResult> DeleteRolePermission(int id)
         {
             try
             {
-                var success = await _accessService.DeleteAsync(id);
+                var success = await _rolepermissionService.DeleteAsync(id);
                 if (!success)
-                    return NotFound($"#404! Access with ID {id} not found");
+                    return NotFound($"#404! RolePermission with ID {id} not found");
 
-                return Ok($"Access with ID {id} deleted successfully");
+                return Ok($"RolePermission with ID {id} deleted successfully");
             }
             catch (Exception x)
             {

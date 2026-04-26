@@ -12,7 +12,6 @@ namespace Backend.Backend.DTOs
         public char? Sex { get; set; }
         public DateTime? Birth_Date { get; set; }
         public string? Address { get; set; }
-        public int? UserGroup_ID { get; set; }
     }
 
     public class AddUserDTO
@@ -24,7 +23,6 @@ namespace Backend.Backend.DTOs
         public char? Sex { get; set; }
         public DateTime? Birth_Date { get; set; }
         public string? Address { get; set; }
-        public int? UserGroup_ID { get; set; }
     }
 
     public class LoginUserDto

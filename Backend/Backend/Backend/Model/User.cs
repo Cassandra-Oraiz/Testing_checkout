@@ -42,7 +42,6 @@ namespace Backend.Backend.Model
 
         [MaxLength(512)]
         public string? Address { get; set; }
-        public int? UserGroup_ID { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
 

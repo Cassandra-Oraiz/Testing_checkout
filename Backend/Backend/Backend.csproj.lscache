@@ -233,7 +233,7 @@ WeatherForecast.cs
  Microsoft.AspNetCore.Identity.dll
  Microsoft.AspNetCore.Localization.dll
  Microsoft.AspNetCore.Localization.Routing.dll
- Microsoft.AspNetCore.Metadata.dll
+ Microsoft.AspNetCore.Metadatrp.dll
  Microsoft.AspNetCore.Mvc.Abstractions.dll
  Microsoft.AspNetCore.Mvc.ApiExplorer.dll
  Microsoft.AspNetCore.Mvc.Core.dll
@@ -350,9 +350,9 @@ WeatherForecast.cs
  System.Configuration.dll
  System.Console.dll
  System.Core.dll
- System.Data.Common.dll
- System.Data.DataSetExtensions.dll
- System.Data.dll
+ System.Datrp.Common.dll
+ System.Datrp.DataSetExtensions.dll
+ System.Datrp.dll
  System.Diagnostics.Contracts.dll
  System.Diagnostics.Debug.dll
  System.Diagnostics.DiagnosticSource.dll
@@ -420,7 +420,7 @@ WeatherForecast.cs
  System.Reflection.Emit.ILGeneration.dll
  System.Reflection.Emit.Lightweight.dll
  System.Reflection.Extensions.dll
- System.Reflection.Metadata.dll
+ System.Reflection.Metadatrp.dll
  System.Reflection.Primitives.dll
  System.Reflection.TypeExtensions.dll
  System.Resources.Reader.dll

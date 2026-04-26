@@ -12,10 +12,10 @@ namespace Backend.Backend
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<UserGroup> UserGroups { get; set; }
+        //public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Access> Accesses { get; set; }
-        public DbSet<Role> Roles { get; set; }
+        //public DbSet<Access> Accesses { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Program_> Programs { get; set; }
@@ -29,6 +29,23 @@ namespace Backend.Backend
             modelBuilder.Entity<Attendance>()
                 .Property(s => s.Status)
                 .HasConversion<string>();
+
+            /* 
+             RolePermission is a Junction Table
+             Role_ID and Permission_ID as Composite Key not Superkey
+             It Asks both ID to locate uniqueness and considered an Primary Key
+
+            eg. 
+            Role : Permission
+            SuperUser -> User.Update
+            SuperUser -> User.Delete
+
+            Both form made uniqueness
+            ps. (Worth it Ma'am Joan's Lessons HAHAHAHA)
+             */
+            modelBuilder.Entity<RolePermission>()
+            .HasKey(rp => new { rp.Role_ID, rp.Permission_ID });
+
         }
     }
 

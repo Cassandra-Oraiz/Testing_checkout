@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://akrp.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -39,9 +39,9 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
-builder.Services.AddScoped<IUserGroupRepository, UserGroupRepository>();
-builder.Services.AddScoped<IAccessRepository, AccessRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+//builder.Services.AddScoped<IUserGroupRepository, UserGroupRepository>();
+builder.Services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
+//builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IProgramRepository, ProgramRepository>();
@@ -55,9 +55,9 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
-builder.Services.AddScoped<IUserGroupService, UserGroupService>();
-builder.Services.AddScoped<IAccessService, AccessService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
+//builder.Services.AddScoped<IUserGroupService, UserGroupService>();
+builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
+//builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IProgramService, ProgramService>();
