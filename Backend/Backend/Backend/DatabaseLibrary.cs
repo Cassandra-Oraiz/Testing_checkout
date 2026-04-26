@@ -29,18 +29,18 @@ namespace Backend.Backend
                 .HasConversion<string>();
 
             /* 
-             RolePermission is a Junction Table
-             Role_ID and Permission_ID as Composite Key not Superkey
-             It Asks both ID to locate uniqueness and considered an Primary Key
+            RolePermission is a Junction Table
+            Role_ID and Permission_ID as Composite Key not Superkey
+            It Asks both ID to locate uniqueness and considered an Primary Key
 
             eg. 
             Role : Permission
             SuperUser -> User.Update
             SuperUser -> User.Delete
 
-            Both form made uniqueness
+            Both form uniqueness
             ps. (Worth it Ma'am Joan's Lessons HAHAHAHA)
-             */
+            */
             modelBuilder.Entity<RolePermission>()
             .HasKey(rp => new { rp.Role_ID, rp.Permission_ID });
 
