@@ -6,6 +6,17 @@ namespace Backend.Backend.Seeder
 {
     public static class RolePermissionandPermission
     {
+
+        /*
+        
+        This Put Seeds to the:
+            - Permission Entity
+            - AspNet Roles
+
+        Put All permissions in the admin
+
+        */
+
         public static async Task SeedRolePermissionNPermissionAsync(this RoleManager<IdentityRole> roleManager,DatabaseLibrary context)
         {
             // Seed Roles

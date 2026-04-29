@@ -9,7 +9,7 @@ namespace Backend.Backend.DTOs
         public DateTime Date { get; set; }
         public required AttStatus Status { get; set; }
     }
-
+        
     public class AddAttendanceDTO
     {
         public required int Enrollment_ID { get; set; }

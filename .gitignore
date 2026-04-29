@@ -5,7 +5,7 @@
 /Migrations
 /Backend/Migrations
 .gitignore 
-Backend/Attendnce_Management_System/Attendnce_Management_System/appsettings.json
+Backend/Backend/Backend/appsettings.json
 ﻿.vs/
 bin/
 obj/
