@@ -4,7 +4,11 @@ namespace Backend.Backend.Helper
 {
     public static class AddRole
     {
-        // Add role through email, using this method
+        /// <summary>
+        /// Add role through email, using this method
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public static (Role? role, int status_code) AddRoleAccordingToEmail(this string email)
         {
             Role? role;
