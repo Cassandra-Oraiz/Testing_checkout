@@ -4,6 +4,11 @@ namespace Backend.Backend.Helper
 {
     public static class ExtractDocuSer
     {
+        /// <summary>
+        /// Extract The Id from Document Series
+        /// </summary>
+        /// <param name="DocumentSeries"></param>
+        /// <returns></returns>
         public static (int ExtractedId, int statusCode) GetIdByExtractingDocumentSeries(this string DocumentSeries)
         {
             string[] Data = DocumentSeries.Split('-');
