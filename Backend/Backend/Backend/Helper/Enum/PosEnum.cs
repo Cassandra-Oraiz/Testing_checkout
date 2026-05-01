@@ -20,8 +20,7 @@ namespace Backend.Backend.Helper.Enum
         {
             STU,
             TEA,
-            ADM,
-            SUP
+            ADM
         }
     }
 }

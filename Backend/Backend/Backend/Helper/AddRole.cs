@@ -25,10 +25,6 @@ namespace Backend.Backend.Helper
             {
                 role = Role.TEA;
                 status_code = 200;
-            } else if (email.Contains("@admin"))
-            {
-                role = Role.ADM;
-                status_code = 200;
             } else
             {
                 role = null;
