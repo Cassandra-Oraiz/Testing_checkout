@@ -75,23 +75,6 @@ namespace Backend.Backend.Controller
             }
         }
 
-        [HttpPost("/LogIn")]
-        public async Task<IActionResult> Login(LoginUserDto logindto)
-        {
-            try { 
-                var login = await _userService.LoginAsync(logindto);
-
-                if (!login.isSuccess) return Unauthorized(login.Detail);
-
-                return Ok(login.Detail);
-            }
-            catch (Exception x)
-            {
-                // Internal Error
-                return BadRequest($"An Error \"{x}\" Occured");
-            }
-        }
-
         //[HttpPut("{id:int}")]
         //public async Task<IActionResult> Update(int id, AddUserDTO dto)
         //{
