@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Backend.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Backend.Backend.Interface.ServiceInterface;
 
 namespace Backend.Backend.Controllers
@@ -18,31 +19,32 @@ namespace Backend.Backend.Controllers
             _enrollmentService = enrollmentService;
         }
 
-        /// <summary>
-        /// Retrieve all enrollments
-        /// </summary>
-        /// <remarks>
-        /// <para><b>Description:</b></para>
-        /// <para>Fetches all enrollment records in the system.</para>
-        ///
-        /// <para><b>Inputs:</b></para>
-        /// <list type="bullet">
-        ///     <item><description>No input parameters required</description></item>
-        /// </list>
-        ///
-        /// <para><b>Behavior:</b></para>
-        /// <list type="bullet">
-        ///     <item><description>Returns all enrollment records</description></item>
-        ///     <item><description>Returns 404 if no enrollments exist</description></item>
-        /// </list>
-        ///
-        /// <para><b>Example:</b></para>
-        /// <code>
-        /// GET /AttendanceManagement/Enrollment
-        /// </code>
-        /// </remarks>
-        /// <returns>List of enrollments</returns>
-        [HttpGet]
+		/// <summary>
+		/// Retrieve all enrollments
+		/// </summary>
+		/// <remarks>
+		/// <para><b>Description:</b></para>
+		/// <para>Fetches all enrollment records in the system.</para>
+		///
+		/// <para><b>Inputs:</b></para>
+		/// <list type="bullet">
+		///     <item><description>No input parameters required</description></item>
+		/// </list>
+		///
+		/// <para><b>Behavior:</b></para>
+		/// <list type="bullet">
+		///     <item><description>Returns all enrollment records</description></item>
+		///     <item><description>Returns 404 if no enrollments exist</description></item>
+		/// </list>
+		///
+		/// <para><b>Example:</b></para>
+		/// <code>
+		/// GET /AttendanceManagement/Enrollment
+		/// </code>
+		/// </remarks>
+		/// <returns>List of enrollments</returns>
+		[Authorize(Roles = "Admin,Student")]
+		[HttpGet]
         public async Task<IActionResult> GetAllEnrollments()
         {
             try { 
@@ -85,7 +87,8 @@ namespace Backend.Backend.Controllers
         /// <param name="id">Enrollment ID</param>
         /// <returns>Enrollment record</returns>
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetEnrollmentById(int id)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> GetEnrollmentById(int id)
         {
             try { 
                 var enrollment = await _enrollmentService.GetByIdAsync(id);
@@ -131,7 +134,8 @@ namespace Backend.Backend.Controllers
         /// <param name="dto">Enrollment data</param>
         /// <returns>Created enrollment</returns>
         [HttpPost]
-        public async Task<IActionResult> AddEnrollment(AddEnrollmentDTO dto)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> AddEnrollment(AddEnrollmentDTO dto)
         {
             try { 
                 var enrollment = await _enrollmentService.AddAsync(dto);
@@ -168,7 +172,8 @@ namespace Backend.Backend.Controllers
         /// <param name="dto">Updated enrollment data</param>
         /// <returns>Updated enrollment</returns>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateEnrollment(int id, AddEnrollmentDTO dto)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> UpdateEnrollment(int id, AddEnrollmentDTO dto)
         {
             try { 
                 var updatedEnrollment = await _enrollmentService.UpdateAsync(id, dto);
@@ -205,7 +210,8 @@ namespace Backend.Backend.Controllers
         /// <param name="id">Enrollment ID</param>
         /// <returns>Status message</returns>
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteEnrollment(int id)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteEnrollment(int id)
         {
             try { 
                 var success = await _enrollmentService.DeleteAsync(id);

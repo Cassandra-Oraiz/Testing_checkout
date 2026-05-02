@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Backend.Controllers
 {
     /// <summary>
     /// Handles all operations related to Attendance management.
     /// </summary>
+    [Authorize(Roles = "Admin,Teacher")]
     [Route("AttendanceManagement/[controller]")]
     [ApiController]
     public class AttendanceController : ControllerBase

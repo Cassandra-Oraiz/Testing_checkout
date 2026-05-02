@@ -1,6 +1,7 @@
 ﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
 using Backend.Backend.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
@@ -12,7 +13,9 @@ namespace Backend.Controllers
     /// Provides APIs for user login and authentication.
     /// Delegates business logic to <see cref="IAuthService"/>.
     /// </remarks>
+  
     [Route("api/[controller]")]
+    [AllowAnonymous]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -27,6 +30,8 @@ namespace Backend.Controllers
         /// <param name="authService">
         /// Service responsible for authenticating users and generating tokens.
         /// </param>
+        /// 
+
         public AuthController(IAuthService authService)
         {
             _authService = authService;
@@ -58,11 +63,11 @@ namespace Backend.Controllers
                 // Calls the authentication service to process login.
                 var login = await _authService.LoginAsync(logindto);
 
-                // Returns 401 Unauthorized if login fails.
+                //Returns 401 Unauthorized if login fails.
                 if (!login.isSuccess) return Unauthorized(login.Detail);
 
                 // Returns 200 OK if login succeeds.
-                return Ok(login.Detail);
+                return Ok(login);
             }
             catch (Exception x)
             {
