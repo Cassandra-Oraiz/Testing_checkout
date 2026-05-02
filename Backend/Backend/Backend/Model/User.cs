@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Backend.Model
 {
@@ -11,11 +12,8 @@ namespace Backend.Backend.Model
         - new record cant be late with the old record (better for sorting)
         - Avoids collisions if not generated exact time, milisec accuracy
     */
-    public class User
+    public class User : IdentityUser
     {
-        [Key]
-        public string User_ID { get; set; } = Ulid.NewUlid().ToString();
-
         [Required]
         [MaxLength(16)]
         public required string DocumentSeries { get; set; }
@@ -23,14 +21,6 @@ namespace Backend.Backend.Model
         [Required]
         [MaxLength(255)]
         public required string Full_Name { get; set; }
-
-        [Required]
-        [MaxLength(50)]
-        public required string Email { get; set; }
-
-        [Required]
-        [MaxLength(100)]
-        public required string PassHash { get; set; }
 
         [MaxLength(13)]
         public string? Phone_Number { get; set; }

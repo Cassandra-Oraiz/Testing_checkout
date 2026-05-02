@@ -12,8 +12,8 @@ namespace Backend.Backend.Model
         [Required]
         public required int Permission_ID { get; set; } // Composite Key Relation to Permission ID Superkey
 
-        public IdentityRole? Role { get; set; } // For Navigation
+        public IdentityRole? Role { get; set; } // porr reperens
 
-        public Permission? Permission_Entity { get; set; } // For Navigation
+        public Permission? Permission_Entity { get; set; } // por reperens
     }
 }
