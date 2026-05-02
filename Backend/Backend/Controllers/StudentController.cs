@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Backend.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Backend.Backend.Interface.ServiceInterface;
 using System.ComponentModel;
 
@@ -17,6 +18,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> GetAll()
         {
             try { 
@@ -34,6 +36,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             try { 
@@ -51,6 +54,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add(AddStudentDTO dto)
         {
             try { 
@@ -74,6 +78,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, AddStudentDTO dto)
         {
             try { 
@@ -91,6 +96,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try { 

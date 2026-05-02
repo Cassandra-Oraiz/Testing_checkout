@@ -22,10 +22,14 @@ namespace Backend.Backend.Repository
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<User?> GetByEmailOrUsernameAsync(string emailOrUsername)
+        public async Task<User?> GetByEmailAsync(string email)
         {
-            return await _db.Users
-                .FirstOrDefaultAsync(u => u.Email == emailOrUsername || u.Full_Name == emailOrUsername);
+            return await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User?> GetByUsernameAsync(string Username)
+        {
+            return await _db.Users.FirstOrDefaultAsync(u => u.UserName == Username);
         }
 
         public async Task AddAsync(User user)
