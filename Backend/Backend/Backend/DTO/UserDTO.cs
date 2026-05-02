@@ -33,7 +33,16 @@ namespace Backend.Backend.DTOs
 
     public class LoginResult
     {
-        public bool isSuccess { get; set; }  
+        public bool isSuccess { get; set; }
+        public string? Token { get; set; }
         public string? Detail { get; set; }
+    }
+
+    public class RegisterDTO
+    {
+        public int StatusCode { get; set; }
+        public string? Token { get; set; }
+        public string? Detail { get; set;  }
+        public GetUserDTO? Data { get; set; }
     }
 }
