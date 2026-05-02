@@ -1,9 +1,13 @@
 ﻿using Backend.Backend.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Backend.Backend
 {
-    public class DatabaseLibrary : DbContext
+    public class DatabaseLibrary : IdentityDbContext<User>
     {
         public DatabaseLibrary(DbContextOptions<DatabaseLibrary> options) : base(options)
         {
@@ -18,7 +22,6 @@ namespace Backend.Backend
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Program_> Programs { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
-        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +47,30 @@ namespace Backend.Backend
             modelBuilder.Entity<RolePermission>()
             .HasKey(rp => new { rp.Role_ID, rp.Permission_ID });
 
+            modelBuilder.Entity<RolePermission>()
+            .HasOne(rp => rp.Role)
+            .WithMany()
+            .HasForeignKey(rp => rp.Role_ID);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission_Entity)
+                .WithMany()
+                .HasForeignKey(rp => rp.Permission_ID);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<User>())
+            {
+                // check if new user
+                if (entry.State == EntityState.Added &&
+                    string.IsNullOrEmpty(entry.Entity.Id))
+                {
+                    entry.Entity.Id = NUlid.Ulid.NewUlid().ToString();
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 
