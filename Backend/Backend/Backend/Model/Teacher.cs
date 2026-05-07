@@ -23,9 +23,13 @@ namespace Backend.Backend.Model
 
         [Required]
         public required int User_ID { get; set; }
+        public required User User { get; set; }
 
         [Required]
         public required int DepartmentId { get; set; }
+        public required Department Department { get; set; }
+
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
 
         public DateTime CreatedAt {get; set;}
 

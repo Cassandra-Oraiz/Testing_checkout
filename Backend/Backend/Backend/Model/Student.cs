@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Backend.Model
@@ -19,6 +20,7 @@ namespace Backend.Backend.Model
 
         [Required]
         public required int User_ID { get; set; }
+        public required User User { get; set; }
 
         [Required]
         [MaxLength(20)]
@@ -26,9 +28,17 @@ namespace Backend.Backend.Model
 
         [Required]
         public int Program_ID { get; set; }
+        public required Program_ Program { get; set; }
 
         [Required]
         public required int Department_ID { get; set; }
+        public required Department Department { get; set; }
+
+        [Required]
+        public required int SectionID { get; set; } 
+        public required Section Section { get; set; }
+
+        public ICollection<AttendanceStudent> AttendanceStudents { get; set; } = new List<AttendanceStudent>();
 
         [Required]
         public required int Year_Level { get; set; }
