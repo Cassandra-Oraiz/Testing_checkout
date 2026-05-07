@@ -22,6 +22,12 @@ namespace Backend.Backend.Repository
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Teacher?> GetByUUIDAsync(string id)
+        {
+            return await _db.Teachers
+                .FindAsync(id);
+        }
+
         public async Task AddAsync(Teacher teacher)
         {
             _db.Teachers.Add(teacher);

@@ -22,6 +22,11 @@ namespace Backend.Backend.Repository
                   WHERE CAST(SPLIT_PART(""DocumentSeries"", '-', 3) AS INT) = {0}", ID)
                 .FirstOrDefaultAsync();
         }
+        public async Task<Student?> GetByUUIDAsync(string id)
+        {
+            return await _db.Students
+                .FindAsync(id);
+        }
 
         public async Task AddAsync(Student student)
         {
