@@ -8,11 +8,11 @@ namespace Backend.Backend.Model
     {
         [Required]
         public required int Attendance_Id { get; set; }
-        public required Attendance Attendance { get; set; }
+        public Attendance Attendance { get; set; } = null!;
 
         [Required]
         public required string Student_Id { get; set; }
-        public required Student Student { get; set; }
+        public Student Student { get; set; } = null!;
 
         [Required]
         public required AttStatus StudentAttendance { get; set; } = AttStatus.Absent;
