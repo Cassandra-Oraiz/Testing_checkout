@@ -88,6 +88,7 @@ builder.Services.AddScoped<ISectionRepository, SectionRepository>();
 builder.Services.AddScoped<IProgramRepository, ProgramRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IAttendanceStudentRepository, AttendanceStudentRepository>();
 
 
 // Adding DI for the Controller: so controller can use this automatically 
@@ -103,6 +104,7 @@ builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAttendanceStudentService, AttendanceStudentService>();
 
 // Adding DI for the custom authorization system
 // singleton as it does not rely on each request but once and dies if app closes
