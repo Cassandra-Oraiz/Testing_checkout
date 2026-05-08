@@ -84,6 +84,9 @@ namespace Backend.Backend.Service
                     Data = null
                 };
 
+            if (await _scheduleRepository.HasConflictingScheduleAsync(schedule.Course_ID, schedule.AcademicYear, schedule.StartTime, schedule.EndTime, schedule.Section_ID))
+                throw new Exception("Course is already Taken");
+
             var sched = new Schedule
             {
                 Section_ID = schedule.Section_ID,
