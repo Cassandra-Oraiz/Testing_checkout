@@ -27,6 +27,7 @@ namespace Backend.Backend.Service
                 };
             var data = attendances.Select(a => new GetAttendanceDTO
             {
+                Attendance_ID = a.Attendance_ID,
                 Schedule_ID = a.Schedule_ID,
                 TeacherStatus = a.TeacherStatus,
                 Date = a.Date,
@@ -53,6 +54,7 @@ namespace Backend.Backend.Service
 
             var data = new GetAttendanceDTO
             {
+                Attendance_ID= a.Attendance_ID,
                 Schedule_ID = a.Schedule_ID,
                 TeacherStatus = a.TeacherStatus,
                 Date = a.Date,
@@ -83,6 +85,7 @@ namespace Backend.Backend.Service
 
             var data = new GetAttendanceDTO
             {
+                Attendance_ID= attendance.Attendance_ID,
                 Schedule_ID = attendance.Schedule_ID,
                 TeacherStatus = attendance.TeacherStatus,
                 Date = attendance.Date,
@@ -114,6 +117,7 @@ namespace Backend.Backend.Service
 
             var data = new GetAttendanceDTO
             {
+                Attendance_ID = existing.Attendance_ID,
                 Schedule_ID = existing.Schedule_ID,
                 TeacherStatus = existing.TeacherStatus,
                 Date = existing.Date,
