@@ -12,6 +12,6 @@ namespace Backend.Backend.Interface.RepositoryInterface
         Task<Program_?> GetProgramByIdAsync(int Id);
         Task<Student?> GetByUUIDAsync(string id);
         Task<long> GetNextStudentNumber();
-        Task<bool> CheckUserIfTaken(int uId);
+        Task<bool> CheckUserIfTaken(string uId);
     }
 }

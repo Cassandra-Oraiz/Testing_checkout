@@ -58,7 +58,7 @@ namespace Backend.Backend.Repository
                 .SingleAsync();
         }
 
-        public async Task<bool> CheckUserIfTaken(int uId)
+        public async Task<bool> CheckUserIfTaken(string uId)
         {
             return await _db.Students.AnyAsync(s => s.User_ID == uId);
         }
