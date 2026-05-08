@@ -1,7 +1,9 @@
-﻿using Backend.Backend.Model;
-using Backend.Backend.DTOs;
-using Backend.Backend.Interface.ServiceInterface;
+﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.RepositoryInterface;
+using Backend.Backend.Interface.ServiceInterface;
+using Backend.Backend.Model;
+using Backend.Backend.Repository;
+using attStat = Backend.Backend.Helper.Enum.AttendanceEnum.AttStatus;
 
 namespace Backend.Backend.Service
 {
@@ -9,11 +11,15 @@ namespace Backend.Backend.Service
     {
         private readonly IAttendanceStudentRepository _attendancestudentRepository;
         private readonly IStudentRepository _studentRepository;
+        private readonly IScheduleRepository _scheduleRepository;
+        private readonly IAttendanceRepository _attendanceRepository;
 
-        public AttendanceStudentService(IAttendanceStudentRepository attendancestudentRepository, IStudentRepository studentRepository)
+        public AttendanceStudentService(IAttendanceStudentRepository attendancestudentRepository, IStudentRepository studentRepository, IScheduleRepository scheduleRepository, IAttendanceRepository attendanceRepository)
         {
             _attendancestudentRepository = attendancestudentRepository;
             _studentRepository = studentRepository;
+            _scheduleRepository=scheduleRepository;
+            _attendanceRepository=attendanceRepository;
         }
 
         public async Task<ResponseDTO<IEnumerable<GetAttendanceStudentDTO>>> GetAllAsync()
@@ -66,10 +72,49 @@ namespace Backend.Backend.Service
             if (getStudent is null)
                 throw new Exception($"Id {dto.Student_Id} does not Exist");
 
+            // Get Attendance
+            var getAttendance = await _attendanceRepository.GetByIdAsync(dto.Attendance_Id);
+            if (getAttendance is null)
+                throw new Exception($"Attendance {dto.Attendance_Id} Does Not Exist");
+
+            // Get schedule
+            var getSchedule = await _scheduleRepository.GetByIdAsync(getAttendance.Schedule_ID);
+
+            // get current time for validations
+            TimeOnly validationTimeAttendanceStatus = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+            // Get time started
+            TimeOnly started = getSchedule!.StartTime;
+
+            // set late limitation
+            TimeOnly lateChecker = validationTimeAttendanceStatus.AddMinutes(15);
+
+            // set attendance status, initialize to absent
+            attStat stat = attStat.Absent;
+
+            // get day of the week
+            DateTime thisday = DateTime.UtcNow;
+            DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
+
+            // Validation and Status Assignment
+            // Check if todays is the recorded day for schedule
+            if (getSchedule.DayOfWeek != dayOfThisWeek)
+                throw new Exception($"Course is Only available at {getSchedule.DayOfWeek} Not {dayOfThisWeek}");
+
+            // Present
+            if (validationTimeAttendanceStatus < started)
+                stat = attStat.Present;
+
+            if (validationTimeAttendanceStatus <=  lateChecker && validationTimeAttendanceStatus > started)
+                stat = attStat.Late;
+
+            if (validationTimeAttendanceStatus > lateChecker)
+                stat = attStat.Absent;
+
             var attendancestudent = new AttendanceStudent
             {
                 Student_Id = getStudent.Student_ID,
-                StudentAttendance = dto.StudentAttendanceStatus,
+                StudentAttendance = stat,
                 Attendance_Id = dto.Attendance_Id,
             };
 

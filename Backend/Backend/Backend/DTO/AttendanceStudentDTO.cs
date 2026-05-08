@@ -13,6 +13,5 @@ namespace Backend.Backend.DTOs
     {
         public required int Attendance_Id { get; set; }
         public required int Student_Id { get; set; }
-        public required AttendanceEnum StudentAttendanceStatus { get; set; }
     }
 }
