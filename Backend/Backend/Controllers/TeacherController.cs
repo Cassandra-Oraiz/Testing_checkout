@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Backend.Backend.DTOs;
-using Microsoft.AspNetCore.Authorization;
+﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.Backend.Controller
 {
@@ -56,8 +57,12 @@ namespace Backend.Backend.Controller
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add(AddTeacherDTO dto)
         {
-            try { 
-                var teacher = await _teacherService.AddAsync(dto);
+            try {
+                string? uuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(uuid))
+                    throw new Exception("No Operator has been found");
+
+                var teacher = await _teacherService.AddAsync(dto, uuid);
                 return Ok(teacher);
             }
             catch (Exception x)
@@ -71,8 +76,12 @@ namespace Backend.Backend.Controller
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, AddTeacherDTO dto)
         {
-            try { 
-                var teacher = await _teacherService.UpdateAsync(id, dto);
+            try {
+                string? uuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(uuid))
+                    throw new Exception("No Operator has been found");
+
+                var teacher = await _teacherService.UpdateAsync(id, dto, uuid);
                 if (teacher == null)
                     return NotFound($"Teacher with ID {id} not found.");
 

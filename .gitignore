@@ -3,9 +3,9 @@
 /bin
 /obj
 /Migrations
-/Backend/Migrations
+Backend/Backend/Migrations
 .gitignore 
-Backend/Backend/Backend/appsettings.json
+Backend/Backend/appsettings.json
 ﻿.vs/
 bin/
 obj/

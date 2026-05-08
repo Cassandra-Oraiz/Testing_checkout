@@ -21,7 +21,10 @@ namespace Backend.Backend.Model
         public string? Description { get; set; }
 
         [Required]
-        public required int Teacher_ID { get; set; }
+        public required string Teacher_ID { get; set; }
+        public Teacher Teacher { get; set; } = null!;
+
+        public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
         public DateTime CreatedAt { get; set; }
 
