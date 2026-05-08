@@ -27,7 +27,7 @@ namespace Backend.Backend.Service
                 };
             var data = teachers.Select(t => new GetTeacherDTO
             {
-                UserDocumentSeries = t.DocumentSeries,
+                UserDocumentSeries = t.User.DocumentSeries,
                 DocumentSeries = t.DocumentSeries,
                 DepartmentId = t.DepartmentId,
                 CreatedAt = t.CreatedAt,
@@ -54,7 +54,7 @@ namespace Backend.Backend.Service
 
             var data = new GetTeacherDTO
             {
-                UserDocumentSeries = t.DocumentSeries,
+                UserDocumentSeries = t.User.DocumentSeries,
                 DocumentSeries = t.DocumentSeries,
                 DepartmentId = t.DepartmentId,
                 CreatedAt = t.CreatedAt,
