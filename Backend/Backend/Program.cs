@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using Backend.Backend.Helper;
 using Microsoft.OpenApi.Models;
 
 using SeedRole = Backend.Backend.Seeder.RolePermissionandPermission;
@@ -21,8 +22,13 @@ using SeedRole = Backend.Backend.Seeder.RolePermissionandPermission;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Add TimeOnly Converter to Minimize TimeOnly Becoming a String
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    });
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://akrp.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
