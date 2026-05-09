@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Backend.Backend.DTOs;
+﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
+using System.Security.Claims;
 
 namespace Backend.Backend.Controller
 {
@@ -17,6 +19,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> GetAll()
         {
             try { 
@@ -34,6 +37,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             try { 
@@ -51,10 +55,15 @@ namespace Backend.Backend.Controller
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add(AddStudentDTO dto)
         {
-            try { 
-                var student = await _studentService.AddAsync(dto);
+            try {
+                string? uuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(uuid))
+                    throw new Exception("No Operator has been found");
+
+                var student = await _studentService.AddAsync(dto, uuid);
                 // Throw Error if Program Does not Exist or Name Sense is Bad, Only for last chance error or last defense if bug exist
                 if (student.Status_code == 503)
                 {
@@ -74,10 +83,15 @@ namespace Backend.Backend.Controller
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, AddStudentDTO dto)
         {
-            try { 
-                var student = await _studentService.UpdateAsync(id, dto);
+            try {
+                string? uuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(uuid))
+                    throw new Exception("No Operator has been found");
+
+                var student = await _studentService.UpdateAsync(id, dto, uuid);
                 if (student == null)
                     return NotFound($"Student with ID {id} not found.");
 
@@ -91,6 +105,7 @@ namespace Backend.Backend.Controller
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try { 

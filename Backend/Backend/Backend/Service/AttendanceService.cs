@@ -1,17 +1,22 @@
-﻿using Backend.Backend.Model;
-using Backend.Backend.DTOs;
-using Backend.Backend.Interface.ServiceInterface;
+﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.RepositoryInterface;
+using Backend.Backend.Interface.ServiceInterface;
+using Backend.Backend.Model;
+using attStat = Backend.Backend.Helper.Enum.AttendanceEnum.AttStatus;
 
 namespace Backend.Backend.Service
 {
     public class AttendanceService : IAttendanceService
     {
         private readonly IAttendanceRepository _attendanceRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IScheduleRepository _scheduleRepository;
 
-        public AttendanceService(IAttendanceRepository attendanceRepository)
+        public AttendanceService(IAttendanceRepository attendanceRepository, IUserRepository userRepository, IScheduleRepository scheduleRepository)
         {
             _attendanceRepository = attendanceRepository;
+            _userRepository = userRepository;
+            _scheduleRepository = scheduleRepository;
         }
 
         public async Task<ResponseDTO<IEnumerable<GetAttendanceDTO>>> GetAllAsync()
@@ -26,9 +31,11 @@ namespace Backend.Backend.Service
             var data = attendances.Select(a => new GetAttendanceDTO
             {
                 Attendance_ID = a.Attendance_ID,
-                Enrollment_ID = a.Enrollment_ID,
+                Schedule_ID = a.Schedule_ID,
+                TeacherStatus = a.TeacherStatus,
                 Date = a.Date,
-                Status = a.Status,
+                CreatedAt = a.CreatedAt,
+                CreatedBy = a.CreatedBy,
             });
 
             return new ResponseDTO<IEnumerable<GetAttendanceDTO>>
@@ -50,10 +57,12 @@ namespace Backend.Backend.Service
 
             var data = new GetAttendanceDTO
             {
-                Attendance_ID = a.Attendance_ID,
-                Enrollment_ID = a.Enrollment_ID,
+                Attendance_ID= a.Attendance_ID,
+                Schedule_ID = a.Schedule_ID,
+                TeacherStatus = a.TeacherStatus,
                 Date = a.Date,
-                Status = a.Status,
+                CreatedAt = a.CreatedAt,
+                CreatedBy = a.CreatedBy,
             };
 
             return new ResponseDTO<GetAttendanceDTO>
@@ -63,25 +72,65 @@ namespace Backend.Backend.Service
             };
         }
 
-        public async Task<ResponseDTO<GetAttendanceDTO>> AddAsync(AddAttendanceDTO dto)
+        public async Task<ResponseDTO<GetAttendanceDTO>> AddAsync(AddAttendanceDTO dto, string currentUserId)
         {
+            var getOperator = await _userRepository.GetByUUIDAsync(currentUserId);
+
+            // Get schedule
+            var getSchedule = await _scheduleRepository.GetByIdAsync(dto.Schedule_ID);
+            if (getSchedule == null)
+                throw new Exception($"Schedule Id {dto.Schedule_ID} Does not Exist");
+
+            // get current time for validations
+            TimeOnly validationTimeAttendanceStatus = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+            // Get time started
+            TimeOnly started = getSchedule.StartTime;
+
+            // set late limitation
+            TimeOnly lateChecker = validationTimeAttendanceStatus.AddMinutes(15);
+
+            // set attendance status, initialize to absent
+            attStat stat = attStat.Absent;
+
+            // get day of the week
+            DateTime thisday = DateTime.UtcNow;
+            DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
+
+            // Validation and Status Assignment
+            // Check if todays is the recorded day for schedule
+            if (getSchedule.DayOfWeek != dayOfThisWeek)
+                throw new Exception($"Course is Only available at {getSchedule.DayOfWeek} Not {dayOfThisWeek}");
+
+            // Present
+            if (validationTimeAttendanceStatus < started)
+                stat = attStat.Present;
+
+            if (validationTimeAttendanceStatus <=  lateChecker && validationTimeAttendanceStatus > started)
+                stat = attStat.Late;
+
+            if (validationTimeAttendanceStatus > lateChecker)
+                stat = attStat.Absent;
+
             var attendance = new Attendance
             {
-                Enrollment_ID = dto.Enrollment_ID,
-                Date = dto.Date,
-                Status = dto.Status,
+                Schedule_ID = dto.Schedule_ID,
+                TeacherStatus = stat,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
                 CreatedAt = DateTime.UtcNow,
-                LastUpdatedAt = DateTime.UtcNow,
+                CreatedBy = getOperator?.Full_Name ?? "Admin"
             };
 
             await _attendanceRepository.AddAsync(attendance);
 
             var data = new GetAttendanceDTO
             {
-                Attendance_ID = attendance.Attendance_ID,
-                Enrollment_ID = attendance.Enrollment_ID,
+                Attendance_ID= attendance.Attendance_ID,
+                Schedule_ID = attendance.Schedule_ID,
+                TeacherStatus = attendance.TeacherStatus,
                 Date = attendance.Date,
-                Status = attendance.Status,
+                CreatedAt = attendance.CreatedAt,
+                CreatedBy = attendance.CreatedBy,
             };
 
             return new ResponseDTO<GetAttendanceDTO>
@@ -101,19 +150,18 @@ namespace Backend.Backend.Service
                     Data = null
                 };
 
-            existing.Enrollment_ID = dto.Enrollment_ID;
-            existing.Date = dto.Date;
-            existing.Status = dto.Status;
-            existing.LastUpdatedAt = DateTime.UtcNow;
+            existing.Schedule_ID = dto.Schedule_ID;
 
             await _attendanceRepository.UpdateAsync(existing);
 
             var data = new GetAttendanceDTO
             {
                 Attendance_ID = existing.Attendance_ID,
-                Enrollment_ID = existing.Enrollment_ID,
+                Schedule_ID = existing.Schedule_ID,
+                TeacherStatus = existing.TeacherStatus,
                 Date = existing.Date,
-                Status = existing.Status,
+                CreatedAt = existing.CreatedAt,
+                CreatedBy = existing.CreatedBy,
             };
 
             return new ResponseDTO<GetAttendanceDTO>
