@@ -3,6 +3,7 @@
 /bin
 /obj
 /Migrations
+Backend/Backend/Backend.csproj.lscache
 Backend/Backend/Migrations
 .gitignore 
 Backend/Backend/appsettings.json
