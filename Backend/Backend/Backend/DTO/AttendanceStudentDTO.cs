@@ -11,7 +11,5 @@ namespace Backend.Backend.DTOs
 
     public class AddAttendanceStudentDTO
     {
-        public required int Attendance_Id { get; set; }
-        public required int Student_Id { get; set; }
-    }
+        public required int Attendance_Id { get; set; }    }
 }
