@@ -16,7 +16,7 @@ namespace Backend.Backend.Repository
 
         public async Task<Attendance?> GetByIdAsync(int ID)
         {
-            return await _db.Attendances.FindAsync(ID);
+            return await _db.Attendances.Include(a => a.Schedule).FirstOrDefaultAsync(a => a.Attendance_ID == ID);
         }
 
         public async Task AddAsync(Attendance attendance)
