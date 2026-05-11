@@ -11,7 +11,7 @@ namespace Backend.Backend.Repository
 
         public async Task<IEnumerable<Teacher>> GetAllAsync()
         {
-            return await _db.Teachers.ToListAsync();
+            return await _db.Teachers.Include(t => t.User).Include(t => t.Courses).ToListAsync();
         }
 
         public async Task<Teacher?> GetByIdAsync(int ID)
@@ -19,13 +19,13 @@ namespace Backend.Backend.Repository
             return await _db.Teachers
                 .FromSqlRaw(@"SELECT * FROM ""Teachers"" 
                   WHERE CAST(SPLIT_PART(""DocumentSeries"", '-', 3) AS INT) = {0}", ID)
-                .FirstOrDefaultAsync();
+                .Include(t => t.User).Include(t => t.Courses).FirstOrDefaultAsync();
         }
 
         public async Task<Teacher?> GetByUUIDAsync(string id)
         {
             return await _db.Teachers
-                .FindAsync(id);
+                .Include(t => t.User).Include(t => t.Courses).FirstOrDefaultAsync(fid => fid.Teacher_ID == id);
         }
 
         public async Task AddAsync(Teacher teacher)

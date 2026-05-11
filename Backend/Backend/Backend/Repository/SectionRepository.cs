@@ -15,7 +15,7 @@ namespace Backend.Backend.Repository
 
         public async Task<Section?> GetByIdAsync(int id)
         {
-            return await _db.Sections.FindAsync(id);
+            return await _db.Sections.FirstOrDefaultAsync(s => s.Section_Id == id);
         }
 
         public async Task AddAsync(Section enrollment)

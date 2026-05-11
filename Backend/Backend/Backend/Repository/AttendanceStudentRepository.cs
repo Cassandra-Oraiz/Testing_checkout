@@ -10,7 +10,15 @@ namespace Backend.Backend.Repository
 
         public async Task<IEnumerable<AttendanceStudent>> GetAllAsync()
         {
-            return await _db.AttendanceStudents.ToListAsync();
+            return await _db.AttendanceStudents.Include(a => a.Attendance).Include(a => a.Student).ToListAsync();
+        }
+
+        public async Task<AttendanceStudent?> GetByIdAsync(int attendanceId,string studentId)
+        {
+            return await _db.AttendanceStudents
+                .Include(a => a.Attendance)
+                .Include(a => a.Student)
+                .FirstOrDefaultAsync(a =>a.Attendance_Id == attendanceId && a.Student_Id == studentId);
         }
 
         public async Task AddAsync(AttendanceStudent enrollment)
