@@ -78,35 +78,44 @@ namespace Backend.Backend.Service
             // Get schedule
             var getSchedule = getAttendance.Schedule;
 
+
             // get current time for validations
-            TimeOnly validationTimeAttendanceStatus = TimeOnly.FromDateTime(DateTime.UtcNow);
+            TimeOnly validationTimeAttendanceStatus = TimeOnly.FromDateTime(DateTime.Now);
 
             // Get time started
-            TimeOnly started = getSchedule!.StartTime;
+            TimeOnly started = getSchedule.StartTime;
 
             // set late limitation
-            TimeOnly lateChecker = validationTimeAttendanceStatus.AddMinutes(15);
+            TimeOnly lateChecker = started.AddMinutes(15);
+
 
             // set attendance status, initialize to absent
             attStat stat = attStat.Absent;
 
+
             // get day of the week
-            DateTime thisday = DateTime.UtcNow;
+            DateTime thisday = DateTime.Now;
             DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
+
+            Console.WriteLine($"{validationTimeAttendanceStatus}" +
+    $"{started}\n" +
+    $"{lateChecker}\n" +
+    $"{thisday}\n" +
+    $"{dayOfThisWeek}\n"
+    );
 
             // Validation and Status Assignment
             // Check if todays is the recorded day for schedule
             if (getSchedule.DayOfWeek != dayOfThisWeek)
                 throw new Exception($"Course is Only available at {getSchedule.DayOfWeek} Not {dayOfThisWeek}");
 
-            // Present
-            if (validationTimeAttendanceStatus < started)
+            // Status
+
+            if (validationTimeAttendanceStatus <= started)
                 stat = attStat.Present;
-
-            if (validationTimeAttendanceStatus <=  lateChecker && validationTimeAttendanceStatus > started)
+            else if (validationTimeAttendanceStatus <= lateChecker)
                 stat = attStat.Late;
-
-            if (validationTimeAttendanceStatus > lateChecker)
+            else
                 stat = attStat.Absent;
 
             var attendancestudent = new AttendanceStudent

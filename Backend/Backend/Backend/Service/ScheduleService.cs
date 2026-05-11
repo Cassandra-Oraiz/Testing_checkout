@@ -76,7 +76,7 @@ namespace Backend.Backend.Service
         public async Task<ResponseDTO<GetScheduleDTO>> AddAsync(AddScheduleDTO schedule)
         {
             // check course row's existence shesh
-            var course = _courseRepository.GetByIdAsync(schedule.Course_ID);
+            var course = await _courseRepository.GetByIdAsync(schedule.Course_ID);
             if (course is null)
                 return new ResponseDTO<GetScheduleDTO>
                 {
