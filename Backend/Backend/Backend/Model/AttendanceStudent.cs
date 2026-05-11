@@ -15,6 +15,6 @@ namespace Backend.Backend.Model
         public Student Student { get; set; } = null!;
 
         [Required]
-        public required AttStatus StudentAttendance { get; set; } = AttStatus.Absent;
+        public required AttStatus StudentAttendance { get; set; } = AttStatus.Unassigned;
     }
 }
