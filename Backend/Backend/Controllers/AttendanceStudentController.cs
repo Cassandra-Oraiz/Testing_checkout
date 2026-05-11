@@ -9,7 +9,6 @@ namespace Backend.Backend.Controllers
     /// <summary>
     /// Handles all operations related to AttendanceStudent management.
     /// </summary>
-    [Authorize(Roles = "Admin,Teacher")]
     [Route("AttendanceStudentManagement/[controller]")]
     [ApiController]
     public class AttendanceStudentController : ControllerBase
@@ -45,6 +44,7 @@ namespace Backend.Backend.Controllers
         /// </code>
         /// </remarks>
         /// <returns>List of attendancestudent records</returns>
+        [Authorize(Roles = "Admin,Teacher")]
         [HttpGet]
         public async Task<IActionResult> GetAllAttendanceStudents()
         {
@@ -111,6 +111,7 @@ namespace Backend.Backend.Controllers
         /// </remarks>
         /// <param name="dto">AttendanceStudent data</param>
         /// <returns>Created attendancestudent record</returns>
+        [Authorize(Roles = "Admin,Teacher,Student")]
         [HttpPost]
         public async Task<IActionResult> AddAttendanceStudent(AddAttendanceStudentDTO dto)
         {
