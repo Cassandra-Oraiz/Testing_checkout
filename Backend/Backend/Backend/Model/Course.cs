@@ -14,7 +14,7 @@ namespace Backend.Backend.Model
         public required string Title { get; set; }
 
         [Required]
-        [MaxLength(6)]
+        [MaxLength(8)]
         public required string Code { get; set; }
 
         [MaxLength(512)]
