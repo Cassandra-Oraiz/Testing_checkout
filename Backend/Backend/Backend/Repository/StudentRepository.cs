@@ -29,6 +29,14 @@ namespace Backend.Backend.Repository
                 .FirstOrDefaultAsync(fid => fid.Student_ID == id);
         }
 
+        public async Task<Student?> GetByUserUUIDAsync(string id)
+        {
+            return await _db.Students
+                .Include(s => s.User)
+                .Where(s => s.User_ID  == id)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task AddAsync(Student student)
         {
             _db.Students.Add(student);
