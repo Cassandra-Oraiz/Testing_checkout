@@ -109,18 +109,17 @@ namespace Backend.Backend.Controllers
         /// }
         /// </code>
         /// </remarks>
-        /// <param name="dto">AttendanceStudent data</param>
         /// <returns>Created attendancestudent record</returns>
         [Authorize(Roles = "Admin,Teacher,Student")]
         [HttpPost]
-        public async Task<IActionResult> AddAttendanceStudent(AddAttendanceStudentDTO dto)
+        public async Task<IActionResult> AddAttendanceStudent()
         {
             try {
                 string? uuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(uuid))
                     throw new Exception("No Operator has been found");
 
-                var attendancestudent = await _attendanceService.AddAsync(dto, uuid);
+                var attendancestudent = await _attendanceService.AddAsync(uuid);
                 return Ok(attendancestudent);
             }
             catch (Exception x)
