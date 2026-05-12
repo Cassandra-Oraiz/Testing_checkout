@@ -81,6 +81,7 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetStudentDTO>> AddAsync(AddStudentDTO dto, string uuid)
         {
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
 
             // Get User Doc Series not UUID
             var getUser = await _userRepository.GetByIdAsync(dto.User_ID);
@@ -127,9 +128,9 @@ namespace Backend.Backend.Service
                 Program_ID = dto.Program_ID,
                 Department_ID = dto.Department_ID,
                 Year_Level = dto.Year_Level,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
                 CreatedBy = getOperator?.Full_Name ?? "Admin",
-                LastUpdatedAt = DateTime.UtcNow,
+                LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
                 LastUpdatedBy = getOperator?.Full_Name ?? "Admin",
             };
 
@@ -158,6 +159,7 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetStudentDTO>> UpdateAsync(int id, AddStudentDTO dto, string uuid)
         {
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
             var existing = await _studentRepository.GetByIdAsync(id);
             if (existing == null)
                 return new ResponseDTO<GetStudentDTO>
@@ -178,7 +180,7 @@ namespace Backend.Backend.Service
             existing.User_ID = userStudent.DocumentSeries;
             existing.Department_ID = dto.Department_ID;
             existing.Year_Level = dto.Year_Level;
-            existing.LastUpdatedAt = DateTime.UtcNow;
+            existing.LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone);
             existing.LastUpdatedBy = userOperator?.Full_Name ?? "Admin";
 
             await _studentRepository.UpdateAsync(existing);

@@ -67,17 +67,20 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetAttendanceStudentDTO>> AddAsync(string uuid)
         {
+            // Get Manila's Id
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+
             // get student
             var getStudent = await _studentRepository.GetByUserUUIDAsync(uuid);
             if (getStudent is null)
                 throw new Exception($"Student Does Not Exist");
 
             // get day of the week
-            DateOnly thisday = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly thisday = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone));
             DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
 
             // get current time for validations
-            TimeOnly now = TimeOnly.FromDateTime(DateTime.Now); 
+            TimeOnly now = TimeOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone)); 
 
             var getAttendance = await _attendanceRepository.GetAttendanceIfExist(getStudent.Student_ID,thisday,now);
             if (getAttendance is null)

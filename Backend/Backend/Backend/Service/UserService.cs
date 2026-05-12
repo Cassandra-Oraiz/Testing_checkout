@@ -91,6 +91,7 @@ namespace Backend.Backend.Service
 
         public async Task<RegisterDTO> AddAsync(AddUserDTO userDto)
         {
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
             // This will check if the email exist
             User? DBEmails = await _userManager.FindByEmailAsync(userDto.Email);
             if (DBEmails != null)
@@ -133,8 +134,8 @@ namespace Backend.Backend.Service
                 Sex = userDto.Sex,
                 Birth_Date = userDto.Birth_Date,
                 Address = userDto.Address,
-                CreatedAt = DateTime.UtcNow,
-                LastUpdatedAt = DateTime.UtcNow,
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
+                LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
                 CreatedBy = "Admin",
                 LastUpdatedBy = "Admin"
             };
@@ -207,7 +208,7 @@ namespace Backend.Backend.Service
         //    existing.Birth_Date = userDto.Birth_Date;
         //    existing.Address = userDto.Address;
         //    existing.UserGroup_ID = userDto.UserGroup_ID;
-        //    existing.LastUpdatedAt = DateTime.UtcNow;
+        //    existing.LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone);
         //    existing.LastUpdatedBy = userDto.LastUpdatedBy;
 
         //    await _userRepository.UpdateAsync(existing);

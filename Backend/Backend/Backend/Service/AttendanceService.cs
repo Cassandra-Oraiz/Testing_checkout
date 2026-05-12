@@ -74,6 +74,9 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetAttendanceDTO>> AddAsync(AddAttendanceDTO dto, string currentUserId)
         {
+            // Find manila Id
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+
             var getOperator = await _userRepository.GetByUUIDAsync(currentUserId);
 
             // Get schedule
@@ -95,11 +98,11 @@ namespace Backend.Backend.Service
 
 
             // get day of the week
-            DateOnly thisday = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly thisday = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone));
             DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
 
             // get current time for validations
-            TimeOnly now = TimeOnly.FromDateTime(DateTime.Now);
+            TimeOnly now = TimeOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone));
 
             // Validation and Status Assignment
             // Check if todays is the recorded day for schedule
@@ -126,8 +129,8 @@ namespace Backend.Backend.Service
             {
                 Schedule_ID = dto.Schedule_ID,
                 TeacherStatus = stat,
-                Date = DateOnly.FromDateTime(DateTime.Now),
-                CreatedAt = DateTime.UtcNow,
+                Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone)),
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
                 CreatedBy = getOperator?.Full_Name ?? "Admin"
             };
 
