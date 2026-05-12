@@ -8,8 +8,4 @@ namespace Backend.Backend.DTOs
         public required string StudentDocumentSeries { get; set; }
         public required AttendanceEnum StudentAttendanceStatus { get; set; }
     }
-
-    public class AddAttendanceStudentDTO
-    {
-        public required int Attendance_Id { get; set; }    }
 }
