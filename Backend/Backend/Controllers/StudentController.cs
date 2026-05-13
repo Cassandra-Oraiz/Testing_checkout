@@ -1,5 +1,6 @@
 ﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
+using Backend.Backend.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
@@ -54,8 +55,19 @@ namespace Backend.Backend.Controller
             }
         }
 
+        [HttpGet("{id}/qr")]
+        public async Task<IActionResult> GetQr(int id)
+        {
+            var student = await _studentService.getQrById(id); 
+
+            if (student == null)
+                return NotFound();
+
+            return File(student, "image/png");
+        }
+
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Teacher,Student")]
         public async Task<IActionResult> Add(AddStudentDTO dto)
         {
             try {
