@@ -9,11 +9,13 @@ namespace Backend.Backend.Service
     {
         private readonly ITeacherRepository _teacherRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IQrService _qrService;
 
-        public TeacherService(ITeacherRepository teacherRepository, IUserRepository userRepository)
+        public TeacherService(ITeacherRepository teacherRepository, IUserRepository userRepository, IQrService qrService)
         {
             _teacherRepository = teacherRepository;
             _userRepository = userRepository;
+            _qrService=qrService;
         }
 
         public async Task<ResponseDTO<IEnumerable<GetTeacherDTO>>> GetAllAsync()
@@ -98,6 +100,7 @@ namespace Backend.Backend.Service
                 DocumentSeries = docSer,
                 DepartmentId = dto.DepartmentId,
                 CreatedAt = DateTime.UtcNow,
+                QrToken = _qrService.GenerateToken(),
                 CreatedBy = getOperator?.Full_Name ?? "Admin",
                 LastUpdatedAt = DateTime.UtcNow,
                 LastUpdatedBy = getOperator?.Full_Name ?? "Admin",
