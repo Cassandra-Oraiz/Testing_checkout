@@ -24,6 +24,8 @@ namespace Backend.Backend.Model
         [Required]
         public required string User_ID { get; set; }
         public User User { get; set; } = null!;
+        [MaxLength(255)]
+        public required string QrToken { get; set; }
 
         [Required]
         public required int DepartmentId { get; set; }
