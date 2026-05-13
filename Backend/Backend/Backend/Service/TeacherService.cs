@@ -74,6 +74,8 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetTeacherDTO>> AddAsync(AddTeacherDTO dto, string uuid)
         {
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+
             // Get Department
             var getDepartment = await _teacherRepository.GetDepartmentById(dto.DepartmentId);
             // Get Acronym
@@ -99,10 +101,10 @@ namespace Backend.Backend.Service
                 User_ID = getUser.Id,
                 DocumentSeries = docSer,
                 DepartmentId = dto.DepartmentId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
                 QrToken = _qrService.GenerateToken(),
                 CreatedBy = getOperator?.Full_Name ?? "Admin",
-                LastUpdatedAt = DateTime.UtcNow,
+                LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
                 LastUpdatedBy = getOperator?.Full_Name ?? "Admin",
             };
 
@@ -128,6 +130,8 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetTeacherDTO>> UpdateAsync(int id, AddTeacherDTO dto, string uuid)
         {
+            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+
             var existing = await _teacherRepository.GetByIdAsync(id);
             if (existing == null)
                 return new ResponseDTO<GetTeacherDTO>
@@ -145,7 +149,7 @@ namespace Backend.Backend.Service
                 throw new Exception($"User Id {dto.User_ID} Does not Exist");
 
             existing.DepartmentId = dto.DepartmentId;
-            existing.LastUpdatedAt = DateTime.UtcNow;
+            existing.LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone);
             existing.LastUpdatedBy = getOperator?.Full_Name ?? "Admin";
 
             await _teacherRepository.UpdateAsync(existing);
