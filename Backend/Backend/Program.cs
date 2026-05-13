@@ -124,7 +124,7 @@ builder.Services
     .AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseLibrary>()
     .AddDefaultTokenProviders();
-
+    
 var jwtSection = builder.Configuration.GetSection("Jwt"); //get all hwt section, use to grab the key:value pair of the config, which is not hardcoded but in environment
 
 var jwtKey = jwtSection["Key"]!; // gimme value for key
