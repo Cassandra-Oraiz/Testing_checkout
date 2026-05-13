@@ -65,13 +65,13 @@ namespace Backend.Backend.Service
         //    };
         //}
 
-        public async Task<ResponseDTO<GetAttendanceStudentDTO>> AddAsync(string uuid)
+        public async Task<ResponseDTO<GetAttendanceStudentDTO>> AddAsync(ScanRequest request)
         {
             // Get Manila's Id
             TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
 
             // get student
-            var getStudent = await _studentRepository.GetByUserUUIDAsync(uuid);
+            var getStudent = await _studentRepository.GetByQrToken(request.QrToken);
             if (getStudent is null)
                 throw new Exception($"Student Does Not Exist");
 

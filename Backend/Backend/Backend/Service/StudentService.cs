@@ -1,7 +1,9 @@
-﻿using Backend.Backend.Model;
-using Backend.Backend.DTOs;
-using Backend.Backend.Interface.ServiceInterface;
+﻿using Backend.Backend.DTOs;
 using Backend.Backend.Interface.RepositoryInterface;
+using Backend.Backend.Interface.ServiceInterface;
+using Backend.Backend.Model;
+using QRCoder;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
 namespace Backend.Backend.Service
@@ -10,11 +12,13 @@ namespace Backend.Backend.Service
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IQrService _qrService;
 
-        public StudentService(IStudentRepository studentRepository, IUserRepository userRepository)
+        public StudentService(IStudentRepository studentRepository, IUserRepository userRepository, IQrService qrIService)
         {
             _studentRepository = studentRepository;
             _userRepository = userRepository;
+            _qrService = qrIService;
         }
 
         public async Task<ResponseDTO<IEnumerable<GetStudentDTO>>> GetAllAsync()
@@ -79,6 +83,21 @@ namespace Backend.Backend.Service
             };
         }
 
+        public async Task<byte[]?> getQrById(int id)
+        {
+            var student = await _studentRepository.GetByIdAsync(id);
+            if (student == null)
+                return null;
+
+            // content inside QR
+            var qrContent = student.QrToken;
+
+            var qrBytes = _qrService.GenerateQr(qrContent);
+
+            return qrBytes;
+        }
+
+
         public async Task<ResponseDTO<GetStudentDTO>> AddAsync(AddStudentDTO dto, string uuid)
         {
             TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
@@ -125,6 +144,7 @@ namespace Backend.Backend.Service
                 SectionID = dto.SectionID,
                 User_ID = getUser.Id,
                 DocumentSeries = DocSer,
+                QrToken = _qrService.GenerateToken(),
                 Program_ID = dto.Program_ID,
                 Department_ID = dto.Department_ID,
                 Year_Level = dto.Year_Level,
