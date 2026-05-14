@@ -133,10 +133,9 @@ namespace Backend.Backend.Controllers
         /// }
         /// </code>
         /// </remarks>
-        /// <param name="dto">Attendance data</param>
         /// <returns>Created attendance record</returns>
         [HttpPost]
-        public async Task<IActionResult> AddAttendance(AddAttendanceDTO dto)
+        public async Task<IActionResult> AddAttendance()
         {
             try {
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -144,7 +143,7 @@ namespace Backend.Backend.Controllers
                 if (userId == null)
                     throw new Exception("The Operator is Not Found");
 
-                var attendance = await _attendanceService.AddAsync(dto, userId);
+                var attendance = await _attendanceService.AddAsync(userId);
                 return Ok(attendance);
             }
             catch (Exception x)
