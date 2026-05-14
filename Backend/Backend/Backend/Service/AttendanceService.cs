@@ -154,37 +154,6 @@ namespace Backend.Backend.Service
             };
         }
 
-        public async Task<ResponseDTO<GetAttendanceDTO>> UpdateAsync(int id, AddAttendanceDTO dto)
-        {
-            var existing = await _attendanceRepository.GetByIdAsync(id);
-            if (existing == null)
-                return new ResponseDTO<GetAttendanceDTO>()
-                {
-                    Status_code=404,
-                    Data = null
-                };
-
-            existing.Schedule_ID = dto.Schedule_ID;
-
-            await _attendanceRepository.UpdateAsync(existing);
-
-            var data = new GetAttendanceDTO
-            {
-                Attendance_ID = existing.Attendance_ID,
-                Schedule_ID = existing.Schedule_ID,
-                TeacherStatus = existing.TeacherStatus,
-                Date = existing.Date,
-                CreatedAt = existing.CreatedAt,
-                CreatedBy = existing.CreatedBy,
-            };
-
-            return new ResponseDTO<GetAttendanceDTO>
-            {
-                Status_code = 200,
-                Data = data
-            };
-        }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var existing = await _attendanceRepository.GetByIdAsync(id);
