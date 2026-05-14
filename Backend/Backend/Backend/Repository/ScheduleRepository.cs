@@ -27,6 +27,25 @@ namespace Backend.Backend.Repository
             await _db.SaveChangesAsync();
         }
 
+        public async Task<Schedule?> GetScheduleIfExist(string id, DayOfWeek dayOfWeek, TimeOnly now)
+        {
+            var windowStart = now.AddMinutes(-30);
+
+            return await _db.Schedules
+                .FromSqlRaw(@"
+                    SELECT s.*
+                    FROM ""Schedules"" s
+                    JOIN ""Courses"" c ON s.""Course_ID"" = c.""Course_ID""
+                    JOIN ""Teachers"" st ON st.""Teacher_ID"" = c.""Teacher_ID""
+                    WHERE t.""Teacher_ID"" = {0}
+                    AND s.""DayOfWeek"" = {1}
+                    AND s.""StartTime"" - INTERVAL '30 minutes' <= {2}
+                    AND ss.""EndTime"" >= {2}",
+                    id, dayOfWeek, now)
+                .Include(s => s.Course)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<bool> HasConflictingScheduleAsync(int courseId,string academicYear,TimeOnly startTime,TimeOnly endTime,int sectionId)
         {
             return await _db.Schedules.AnyAsync(s =>
