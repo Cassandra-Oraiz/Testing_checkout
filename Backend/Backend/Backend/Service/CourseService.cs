@@ -78,8 +78,8 @@ namespace Backend.Backend.Service
                 Code = dto.Code,
                 Description = dto.Description,
                 Teacher_ID = getTeacher.Teacher_ID,
-                CreatedAt = TimeHelper.Now(),
-                LastUpdatedAt = TimeHelper.Now(),
+                CreatedAt = DateTime.UtcNow,
+                LastUpdatedAt = DateTime.UtcNow,
             };
 
             await _courseRepository.AddAsync(course);

@@ -13,12 +13,14 @@ namespace Backend.Backend.Service
         private readonly IAttendanceRepository _attendanceRepository;
         private readonly IUserRepository _userRepository;
         private readonly IScheduleRepository _scheduleRepository;
+        private readonly ITeacherRepository _teacherRepository;
 
-        public AttendanceService(IAttendanceRepository attendanceRepository, IUserRepository userRepository, IScheduleRepository scheduleRepository)
+        public AttendanceService(IAttendanceRepository attendanceRepository, IUserRepository userRepository, IScheduleRepository scheduleRepository, ITeacherRepository teacherRepository)
         {
             _attendanceRepository = attendanceRepository;
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
+            _teacherRepository = teacherRepository;
         }
 
         public async Task<ResponseDTO<IEnumerable<GetAttendanceDTO>>> GetAllAsync()
@@ -78,7 +80,11 @@ namespace Backend.Backend.Service
         {
             var getOperator = await _userRepository.GetByUUIDAsync(currentUserId);
             if (getOperator == null)
-                throw new Exception("No Teache Has been Found");
+                throw new Exception("No Operator Has been Found");
+            Console.WriteLine(currentUserId);
+            var getTeacher = await _teacherRepository.GetTeacherByUserUUIDAsync(currentUserId);
+            if (getTeacher == null)
+                throw new Exception("No Teacher Has Been Found");
 
             // get current time for validations
             TimeOnly now = TimeOnly.FromDateTime(TimeHelper.Now());
@@ -90,7 +96,7 @@ namespace Backend.Backend.Service
             DateOnly thisday = DateOnly.FromDateTime(TimeHelper.Now());
             DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
 
-            var getSchedule = await _scheduleRepository.GetScheduleIfExist(getOperator.Id, dayOfThisWeek, now);
+            var getSchedule = await _scheduleRepository.GetScheduleIfExist(getTeacher.Teacher_ID, dayOfThisWeek, now);
             if (getSchedule == null)
                 throw new Exception($"You do not have any classes in this hour");
 
@@ -129,7 +135,7 @@ namespace Backend.Backend.Service
                 Schedule_ID = getSchedule.Schedule_Id,
                 TeacherStatus = stat,
                 Date = DateOnly.FromDateTime(TimeHelper.Now()),
-                CreatedAt = TimeHelper.Now(),
+                CreatedAt = DateTime.UtcNow,
                 CreatedBy = getOperator?.Full_Name ?? "Admin"
             };
 

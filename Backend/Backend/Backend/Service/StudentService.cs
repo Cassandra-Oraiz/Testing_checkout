@@ -1,11 +1,14 @@
 ﻿using Backend.Backend.DTOs;
+using Backend.Backend.Helper;
 using Backend.Backend.Interface.RepositoryInterface;
 using Backend.Backend.Interface.ServiceInterface;
 using Backend.Backend.Model;
-using QRCoder;
 using Microsoft.AspNetCore.Mvc;
+using QRCoder;
 using System.ComponentModel;
-using Backend.Backend.Helper;
+using posStat = Backend.Backend.Helper.Enum.PosEnum.PosStatus;
+
+using static Backend.Backend.Helper.Enum.PosEnum;
 
 namespace Backend.Backend.Service
 {
@@ -138,6 +141,15 @@ namespace Backend.Backend.Service
             //Get Operator
             var getOperator = await _userRepository.GetByUUIDAsync(uuid);
 
+            var position = ExtractDocuSer.ExtractDataFromDocumentSeries(getUser.DocumentSeries);
+            if (position.ExtractedPosition != posStat.TEA)
+                return new ResponseDTO<GetStudentDTO>
+                {
+                    Status_code = 404,
+                    Data =null,
+                    Detail = $"User Is Not a Student"
+                };
+
             var student = new Student
             {
                 SectionID = dto.SectionID,
@@ -147,9 +159,9 @@ namespace Backend.Backend.Service
                 Program_ID = dto.Program_ID,
                 Department_ID = dto.Department_ID,
                 Year_Level = dto.Year_Level,
-                CreatedAt = TimeHelper.Now(),
+                CreatedAt = DateTime.UtcNow,
                 CreatedBy = getOperator?.Full_Name ?? "Admin",
-                LastUpdatedAt = TimeHelper.Now(),
+                LastUpdatedAt = DateTime.UtcNow,
                 LastUpdatedBy = getOperator?.Full_Name ?? "Admin",
             };
 
