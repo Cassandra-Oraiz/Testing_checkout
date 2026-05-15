@@ -1,4 +1,5 @@
 ﻿using Backend.Backend.DTOs;
+using Backend.Backend.Helper;
 using Backend.Backend.Interface.RepositoryInterface;
 using Backend.Backend.Interface.ServiceInterface;
 using Backend.Backend.Model;
@@ -75,21 +76,18 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetAttendanceDTO>> AddAsync(string currentUserId)
         {
-            // Find manila Id
-            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
-
             var getOperator = await _userRepository.GetByUUIDAsync(currentUserId);
             if (getOperator == null)
                 throw new Exception("No Teache Has been Found");
 
             // get current time for validations
-            TimeOnly now = TimeOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone));
+            TimeOnly now = TimeOnly.FromDateTime(TimeHelper.Now());
 
             // set attendance status, initialize to absent
             attStat stat = attStat.Unassigned;
 
             // get day of the week
-            DateOnly thisday = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone));
+            DateOnly thisday = DateOnly.FromDateTime(TimeHelper.Now());
             DayOfWeek dayOfThisWeek = thisday.DayOfWeek;
 
             var getSchedule = await _scheduleRepository.GetScheduleIfExist(getOperator.Id, dayOfThisWeek, now);
@@ -130,8 +128,8 @@ namespace Backend.Backend.Service
             {
                 Schedule_ID = getSchedule.Schedule_Id,
                 TeacherStatus = stat,
-                Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone)),
-                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
+                Date = DateOnly.FromDateTime(TimeHelper.Now()),
+                CreatedAt = TimeHelper.Now(),
                 CreatedBy = getOperator?.Full_Name ?? "Admin"
             };
 

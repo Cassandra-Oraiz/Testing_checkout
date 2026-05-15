@@ -5,6 +5,7 @@ using Backend.Backend.Model;
 using QRCoder;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
+using Backend.Backend.Helper;
 
 namespace Backend.Backend.Service
 {
@@ -100,8 +101,6 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetStudentDTO>> AddAsync(AddStudentDTO dto, string uuid)
         {
-            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
-
             // Get User Doc Series not UUID
             var getUser = await _userRepository.GetByIdAsync(dto.User_ID);
             if (getUser is null)
@@ -148,9 +147,9 @@ namespace Backend.Backend.Service
                 Program_ID = dto.Program_ID,
                 Department_ID = dto.Department_ID,
                 Year_Level = dto.Year_Level,
-                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
+                CreatedAt = TimeHelper.Now(),
                 CreatedBy = getOperator?.Full_Name ?? "Admin",
-                LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
+                LastUpdatedAt = TimeHelper.Now(),
                 LastUpdatedBy = getOperator?.Full_Name ?? "Admin",
             };
 
@@ -179,7 +178,6 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetStudentDTO>> UpdateAsync(int id, AddStudentDTO dto, string uuid)
         {
-            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
             var existing = await _studentRepository.GetByIdAsync(id);
             if (existing == null)
                 return new ResponseDTO<GetStudentDTO>
@@ -200,7 +198,7 @@ namespace Backend.Backend.Service
             existing.User_ID = userStudent.DocumentSeries;
             existing.Department_ID = dto.Department_ID;
             existing.Year_Level = dto.Year_Level;
-            existing.LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone);
+            existing.LastUpdatedAt = TimeHelper.Now();
             existing.LastUpdatedBy = userOperator?.Full_Name ?? "Admin";
 
             await _studentRepository.UpdateAsync(existing);

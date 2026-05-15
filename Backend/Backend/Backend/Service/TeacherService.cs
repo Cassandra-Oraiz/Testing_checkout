@@ -2,6 +2,7 @@
 using Backend.Backend.DTOs;
 using Backend.Backend.Interface.ServiceInterface;
 using Backend.Backend.Interface.RepositoryInterface;
+using Backend.Backend.Helper;
 
 namespace Backend.Backend.Service
 {
@@ -74,8 +75,6 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetTeacherDTO>> AddAsync(AddTeacherDTO dto, string uuid)
         {
-            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
-
             // Get Department
             var getDepartment = await _teacherRepository.GetDepartmentById(dto.DepartmentId);
             // Get Acronym
@@ -101,10 +100,10 @@ namespace Backend.Backend.Service
                 User_ID = getUser.Id,
                 DocumentSeries = docSer,
                 DepartmentId = dto.DepartmentId,
-                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
+                CreatedAt = TimeHelper.Now(),
                 QrToken = _qrService.GenerateToken(),
                 CreatedBy = getOperator?.Full_Name ?? "Admin",
-                LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone),
+                LastUpdatedAt = TimeHelper.Now(),
                 LastUpdatedBy = getOperator?.Full_Name ?? "Admin",
             };
 
@@ -130,7 +129,6 @@ namespace Backend.Backend.Service
 
         public async Task<ResponseDTO<GetTeacherDTO>> UpdateAsync(int id, AddTeacherDTO dto, string uuid)
         {
-            TimeZoneInfo manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
 
             var existing = await _teacherRepository.GetByIdAsync(id);
             if (existing == null)
@@ -149,7 +147,7 @@ namespace Backend.Backend.Service
                 throw new Exception($"User Id {dto.User_ID} Does not Exist");
 
             existing.DepartmentId = dto.DepartmentId;
-            existing.LastUpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, manilaTimeZone);
+            existing.LastUpdatedAt = TimeHelper.Now();
             existing.LastUpdatedBy = getOperator?.Full_Name ?? "Admin";
 
             await _teacherRepository.UpdateAsync(existing);
